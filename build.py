@@ -90,13 +90,13 @@ CARD = {'peluqueria': 'largo-reflejos', 'coloracion': 'ritual-color', 'rubios': 
         'keratina': 'liso-oscuro', 'estetica': 'real-12', 'novias': 'novia-1'}
 
 HERO = {  # slug: (posición del fondo, arco grande, arco pequeño)
-    'index': ('62% 40%', 'letrero-liso', 'balayage'),
+    'index': ('62% 40%', 'letrero-ondas', 'balayage'),
     'servicios': ('50% 40%', 'ritual-color', 'real-12'),
-    'peluqueria': ('40% 50%', 'letrero-ondas', 'bob-miel'),
+    'peluqueria': ('40% 50%', 'largo-reflejos', 'bob-miel'),
     'coloracion': ('58% 40%', 'ritual-color', 'cobrizo'),
     'rubios': ('70% 30%', 'rubio-rizos', 'balayage'),
     'keratina': ('30% 50%', 'liso-oscuro', 'letrero-liso'),
-    'estetica': ('80% 60%', 'real-12', 'real-06'),
+    'estetica': ('80% 60%', 'unas-puesto', 'real-12'),
     'novias': ('68% 20%', 'novia-1', 'recogido-1'),
     'salon': ('50% 50%', 'equipo', 'letrero-1'),
     'galeria': ('60% 30%', 'recogido-2', 'balayage'),
