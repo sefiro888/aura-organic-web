@@ -367,9 +367,31 @@ def pillars_sec(items, kick, h2, intro='', cls='pearl', sid='', dense=False, not
             f'<div class="pillars{" dense" if dense else ""}">{cards}</div>{n}</div></section>')
 
 
-def steps_sec(items, kick, h2, intro='', cta=None, cls='', sid=''):
-    st = ''.join(f'<article class="step reveal" style="--d:{i * .12}s"><span class="dot">{i + 1}</span><h3>{t}</h3><p>{p}</p></article>' for i, (t, p) in enumerate(items))
-    act = f'<div class="actions" style="justify-content:center">{cta}</div>' if cta else ''
+STEP_ICONS = {
+    'peluqueria': ['chat', 'search', 'comb', 'sparkle'],
+    'coloracion': ['search', 'palette', 'brush', 'sun'],
+    'rubios': ['search', 'steps', 'layers', 'calendar'],
+    'keratina': ['chat', 'search', 'smooth', 'shield'],
+    'estetica': ['chat', 'check', 'lotus', 'sparkle'],
+    'novias': ['camera', 'mirror', 'calendar', 'heart'],
+    'inicio': ['chat', 'calendar', 'search', 'sparkle'],
+    'galeria': ['camera', 'search', 'chat', 'sparkle'],
+    'contacto': ['chat', 'calendar', 'camera', 'heart'],
+}
+
+
+def step_cards(items, icons):
+    out = ''
+    for i, (t, p) in enumerate(items):
+        k = icons[i] if i < len(icons) else 'sparkle'
+        out += (f'<article class="step reveal" style="--d:{i * .12}s"><span class="no" aria-hidden="true">0{i + 1}</span>'
+                f'<span class="dot" aria-hidden="true">{ico(t, k)}</span><h3>{t}</h3><p>{p}</p></article>')
+    return out
+
+
+def steps_sec(items, kick, h2, intro='', cta=None, cls='', sid='', icons=None):
+    st = step_cards(items, icons or STEP_ICONS['inicio'])
+    act = f'<div class="actions" style="justify-content:center">{cta}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div>' if cta else ''
     c = f' {cls}' if cls else ''
     return (f'<section class="section{c}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div><div class="steps">{st}</div>{act}</div></section>')
 
@@ -555,8 +577,8 @@ for slug, d in SERVICES.items():
     explorer = (f'<section class="section dark grain" id="descubrir"><div class="wrap"><div class="section-head reveal"><div>{kicker("Qué incluye")}<h2>El cuidado,<br><em>paso a paso.</em></h2></div><p>Elige un apartado o déjate llevar: cambia solo.</p></div>'
                 f'<div class="xp reveal"><div class="xp-tabs" role="tablist" aria-label="Apartados de {d["short"]}">{tabs}</div><div class="xp-panels">{panels}</div></div></div></section>')
     steps = (f'<section class="section" id="cita"><div class="wrap"><div class="section-head reveal"><div>{kicker("Tu cita")}<h2>Así será<br><em>tu visita.</em></h2></div><p>Sin sorpresas: sabrás qué ocurre en cada momento.</p></div><div class="steps">'
-             + ''.join(f'<article class="step reveal" style="--d:{i * .12}s"><span class="dot">{i + 1}</span><h3>{t}</h3><p>{p}</p></article>' for i, (t, p) in enumerate(x['steps'])) + '</div>'
-             f'<div class="actions" style="justify-content:center">{book("Pedir mi cita", d["title"])}</div></div></section>')
+             + step_cards(x['steps'], STEP_ICONS[slug]) + '</div>'
+             f'<div class="actions" style="justify-content:center">{book("Pedir mi cita", d["title"])}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div></div></section>')
     opts = ''.join(f'<article class="option reveal" style="--d:{i * .1}s"><span class="nr">0{i + 1}</span><h3>{t}</h3><p>{p}</p><div class="row">{link(s, "Conocer más")}{book("Consultar mi caso", d["title"], "link")}</div></article>' for i, (t, p, s) in enumerate(d['options']))
     options = f'<section class="section pearl" id="opciones"><div class="wrap"><div class="section-head reveal"><div>{kicker("A tu medida")}<h2>¿Por dónde<br><em>empezamos?</em></h2></div></div><div class="options">{opts}</div><p class="budget-note">Cada propuesta se valora de forma personal. Consulta el tiempo y el presupuesto antes de confirmar tu cita.</p></div></section>'
     tf = transform(m['pairs']) if m['pairs'] else ''
@@ -618,7 +640,7 @@ page('galeria', 'Trabajos reales de AURA', 'Explora fotografías reales de color
          ('Fíjate en el detalle', 'Largo, color, movimiento… no solo en la foto entera.'),
          ('Compártelas con el equipo', 'Envíalas por WhatsApp al pedir cita.'),
          ('Lo adaptamos a ti', 'Ajustamos la idea a tu cabello, tu rostro y tu rutina.')],
-         'De la foto a tu pelo', 'Cómo elegir<br><em>tu look.</em>', 'Un camino sencillo desde la inspiración hasta la silla.', cta=book('Pedir mi cita'), cls='pearl')
+         'De la foto a tu pelo', 'Cómo elegir<br><em>tu look.</em>', 'Un camino sencillo desde la inspiración hasta la silla.', cta=book('Pedir mi cita'), cls='pearl', icons=STEP_ICONS['galeria'])
      + ig_wall())
 
 
@@ -657,7 +679,7 @@ page('contacto', 'Contacto y citas', 'Pide cita en AURA Organic Salón: 642 63 6
          ('Acordamos los detalles', 'El equipo confirma disponibilidad, duración orientativa y presupuesto. La solicitud web no cierra una reserva por sí sola.'),
          ('Trae tus referencias', 'Fotos, ideas y, si es un evento, la fecha y los accesorios.'),
          ('Ven a tu momento', 'Si necesitas cambiar o cancelar, avisa con la mayor antelación posible.')],
-         'Tu primera visita', 'Todo empieza<br><em>con una idea.</em>', 'Cuatro pasos, sin complicaciones.', cta=book('Preparar mi solicitud'))
+         'Tu primera visita', 'Todo empieza<br><em>con una idea.</em>', 'Cuatro pasos, sin complicaciones.', cta=book('Preparar mi solicitud'), icons=STEP_ICONS['contacto'])
      + faqs([('¿Se confirma la cita al rellenar el formulario?', 'No. El formulario prepara un mensaje que tú envías desde WhatsApp. La cita solo queda acordada cuando el equipo confirma día y hora.'),
              ('¿Puedo reservar por teléfono?', 'Sí. Llama al 642 63 69 70 para consultar disponibilidad y organizar tu visita.'),
              ('¿Hay aparcamiento y acceso adaptado?', 'Según la ficha de Google del salón, hay aparcamiento gratuito (en la calle y parking) y el local cuenta con acceso, aparcamiento, asientos y aseo adaptados para sillas de ruedas. Confirma cualquier necesidad concreta al reservar.'),

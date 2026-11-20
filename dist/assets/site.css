@@ -795,3 +795,44 @@ html,body{overflow-x:clip}
  .hero-chips{margin-top:16px}
  .rating{display:none}
 }
+
+/* ───── v3.5 · «Así será tu visita» ───── */
+.steps{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,2vw,28px);padding-top:0}
+.steps::before{content:"";position:absolute;left:62px;right:62px;top:36px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--brass),var(--blush),var(--leaf));transform:scaleX(0);transform-origin:left;transition:transform 2.2s var(--ease);z-index:0}
+.steps.visible::before{transform:none}
+.steps::after{content:"";position:absolute;z-index:2;top:32px;left:62px;width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(233,138,61,.25),0 0 16px var(--amber);opacity:0}
+.steps.visible::after{opacity:1;animation:travel 7s var(--ease) 2.2s infinite}
+@keyframes travel{0%{left:62px;opacity:0}8%{opacity:1}88%{opacity:1}100%{left:calc(100% - 72px);opacity:0}}
+.steps .step{position:relative;z-index:1;margin-top:36px;padding:62px 26px 30px;border-radius:28px;background:var(--cream);border:1px solid rgba(138,108,46,.28);overflow:hidden;transition:transform .6s var(--ease),box-shadow .6s,border-color .6s,background .6s}
+.section.pearl .steps .step{background:var(--ivory)}
+.steps .step::after{content:"";position:absolute;right:-40px;bottom:-60px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(184,147,75,.2),transparent 70%);transition:transform .8s var(--ease)}
+.steps .step:hover{transform:translateY(-10px);border-color:var(--brass);box-shadow:0 40px 60px -32px rgba(34,19,10,.45);background:#fff}
+.steps .step:hover::after{transform:scale(2.4)}
+.steps .step .no{position:absolute;top:14px;right:22px;font:italic 400 4.2rem/1 var(--serif);color:transparent;-webkit-text-stroke:1px rgba(184,147,75,.55);transition:.6s var(--ease)}
+.steps .step:hover .no{-webkit-text-stroke-color:var(--brass);transform:translateY(4px)}
+.steps .step .dot{position:absolute;top:-36px;left:24px;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font:inherit;color:var(--brassl);background:radial-gradient(circle at 30% 25%,var(--em2),var(--em) 70%);border:0;box-shadow:inset 0 0 0 1px rgba(230,205,143,.5),0 0 0 6px var(--ivory),0 14px 26px -10px rgba(13,67,38,.7);transition:transform .6s var(--ease),background .5s,color .5s}
+.section.pearl .steps .step .dot{box-shadow:inset 0 0 0 1px rgba(230,205,143,.5),0 0 0 6px var(--pearl),0 14px 26px -10px rgba(13,67,38,.7)}
+.steps .step .dot svg{width:34px;height:34px;overflow:visible}
+.steps .step .dot svg *{stroke-dasharray:1;stroke-dashoffset:0}
+.js .steps:not(.visible) .step .dot svg *{stroke-dashoffset:1}
+.js .steps.visible .step .dot svg *{animation:draw 1.6s var(--ease) .5s backwards}
+.steps .step:hover .dot{background:linear-gradient(135deg,#e6cd8f,#b8934b);color:var(--w900);transform:rotate(-8deg) scale(1.08)}
+.steps .step h3{font-size:1.7rem;margin-bottom:10px;position:relative}
+.steps .step p{font-size:.96rem;color:var(--mute);position:relative}
+@media (max-width:1100px){.steps{grid-template-columns:repeat(2,1fr);row-gap:20px}.steps::before,.steps::after{display:none}}
+@media (max-width:700px){
+ .steps{grid-template-columns:1fr;row-gap:0;padding-left:0}
+ .steps::before{display:block;left:46px;right:auto;top:30px;bottom:30px;width:2px;height:auto;transform:scaleY(0);transform-origin:top;background:linear-gradient(180deg,var(--brass),var(--blush),var(--leaf))}
+ .steps.visible::before{transform:none}.steps::after{display:none}
+ .steps .step{margin-top:18px;padding:24px 20px 24px 96px;min-height:104px;border-radius:24px}
+ .steps .step .dot{top:50%;left:12px;translate:0 -50%;width:64px;height:64px}
+ .steps .step .dot svg{width:30px;height:30px}
+ .steps .step .no{top:10px;right:16px;font-size:3rem}
+ .steps .step h3{font-size:1.45rem}
+ .steps .step:hover{transform:none;box-shadow:none}
+}
+@media (prefers-reduced-motion:reduce){.steps.visible::after{animation:none;opacity:0}.js .steps:not(.visible) .step .dot svg *{stroke-dashoffset:0}}
+.steps .step{overflow:visible}
+.steps .step::after{right:0;bottom:0;width:150px;height:150px;border-radius:0 0 28px 0;background:radial-gradient(circle at 100% 100%,rgba(184,147,75,.28),transparent 70%);transition:width .8s var(--ease),height .8s var(--ease)}
+.steps .step:hover::after{transform:none;width:280px;height:280px}
+@media (max-width:700px){.steps .step::after{border-radius:0 0 24px 0}}
