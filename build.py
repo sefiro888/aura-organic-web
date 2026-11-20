@@ -16,11 +16,27 @@ def ig(code, kind='p'):
 
 
 # ───────────── imágenes ─────────────
+_DIMS = {}
+
+
+def dims(name):
+    if name not in _DIMS:
+        try:
+            from PIL import Image
+            with Image.open(OUT / 'assets' / 'img' / f'{name}.webp') as im:
+                _DIMS[name] = im.size
+        except Exception:
+            _DIMS[name] = None
+    return _DIMS[name]
+
+
 def img(name, alt, cls='', eager=False, style=''):
     a = f' class="{cls}"' if cls else ''
     s = f' style="{style}"' if style else ''
     load = ' loading="eager" fetchpriority="high"' if eager else ' loading="lazy"'
-    return f'<img{a}{s} src="assets/img/{name}.webp" alt="{e(alt)}"{load} decoding="async">'
+    d = dims(name)
+    wh = f' width="{d[0]}" height="{d[1]}"' if d else ''
+    return f'<img{a}{s} src="assets/img/{name}.webp" alt="{e(alt)}"{wh}{load} decoding="async">'
 
 
 # (archivo, título, categoría, fuente)
@@ -135,7 +151,7 @@ def ext(url, label, cls='link'):
 
 
 def lines(title, i0=0):
-    parts = [x[:1] + x[1:].lower() if x.isupper() else x for x in title.split('\n')]
+    parts = [(x[:1] + x[1:].lower() if i == 0 else x.lower()) if x.isupper() else x for i, x in enumerate(title.split('\n'))]
     out = ''
     for i, p in enumerate(parts):
         inner = f'<em>{p}</em>' if (i == len(parts) - 1 and len(parts) > 1) else p
@@ -225,7 +241,7 @@ def page(slug, title, desc, body):
     html = (f'<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#150b05">'
             f'<title>{e(title)} · AURA Organic Salón · El Sauzal</title><meta name="description" content="{e(desc)}"><meta property="og:title" content="{e(title)} · AURA"><meta property="og:description" content="{e(desc)}"><meta property="og:type" content="website">'
             f'<meta property="og:image" content="{ORIGIN}/assets/img/ambiente-logo.webp"><meta property="og:locale" content="es_ES"><link rel="icon" type="image/png" href="assets/img/favicon.png">'
-            f'<script>document.documentElement.classList.add("js");try{{if(sessionStorage.getItem("auraSeen"))document.documentElement.classList.add("seen")}}catch(e){{}}</script><link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>'
+            f'<script>document.documentElement.classList.add("js");try{{if(sessionStorage.getItem("auraSeen"))document.documentElement.classList.add("seen")}}catch(e){{}}</script><link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/dmsans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/cormorant-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>'
             f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script></head><body data-page="{slug}"><div id="loader" aria-hidden="true"><div class="ring"><img src="assets/img/logo.webp" alt="" width="96" height="96"></div><span>AURA</span></div>{header(slug)}<main id="contenido">{body}</main>{footer()}</body></html>')
     (OUT / f'{slug}.html').write_text(html, encoding='utf8')
 
