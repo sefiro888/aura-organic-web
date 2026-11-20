@@ -2,6 +2,7 @@
 from pathlib import Path
 from html import escape as e
 import json
+import re
 from content import SERVICES, PA, GOOGLE, INSTAGRAM, FACEBOOK
 
 ROOT = Path(__file__).parent
@@ -106,6 +107,16 @@ WORK_SRC = {k: s for k, t, c, s in [(g[0], g[1], g[2], g[3]) for g in GALLERY]}
 WORK_TITLE = {g[0]: g[1] for g in GALLERY}
 
 
+ICONS = {'people': '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19c.5-3.5 3-5.5 5.5-5.5s5 2 5.5 5.5"/><path d="M15 14c3 0 5 1.8 5.5 5"/>', 'search': '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/><path d="M8.5 11h5"/>', 'bottle': '<path d="M10 3h4v3h-4z"/><path d="M9 6h6l1 3v10a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9z"/><path d="M9 13h6"/>', 'sparkle': '<path d="M12 3c.8 4.5 2.5 6.2 7 7-4.5.8-6.2 2.5-7 7-.8-4.5-2.5-6.2-7-7 4.5-.8 6.2-2.5 7-7Z"/><path d="M19 17v4M17 19h4"/>', 'leaf': '<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19c3-4 6-7 10-9"/>', 'palette': '<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2s0-2 1.5-2h2a3 3 0 0 0 3-3c0-5-4-11-8-11Z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16" cy="10" r="1"/>', 'strand': '<path d="M3 9c3-4 6 4 9 0s6 4 9 0"/><path d="M3 15c3-4 6 4 9 0s6 4 9 0"/>', 'sun': '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/>', 'layers': '<path d="M12 4 3 9l9 5 9-5z"/><path d="M3 14l9 5 9-5"/>', 'steps': '<path d="M4 20h4v-4h4v-4h4V8h4"/><path d="M17 5l3 3-3 3"/>', 'shield': '<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="m9 12 2 2 4-4"/>', 'calendar': '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>', 'smooth': '<path d="M3 8c6-2 12 2 18 0M3 12c6-2 12 2 18 0M3 16c6-2 12 2 18 0"/>', 'check': '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/>', 'hand': '<path d="M8 12V6a1.5 1.5 0 0 1 3 0v5"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11V6a1.5 1.5 0 0 1 3 0v8c0 4-2.5 6-6 6-3 0-4.5-1.5-6-4l-1.5-3a1.5 1.5 0 0 1 2.5-1.5L8 14"/>', 'brush': '<path d="M20 4c-5 2-9 6-10.5 10"/><path d="M9.5 14c-2.5 0-3.5 2-3.5 4-1 0-2 .5-2 1.5C6 21 11 21 11 17c0-1.5-.5-2.5-1.5-3Z"/>', 'thread': '<path d="M3 18c4-13 14-13 18 0"/><path d="M8 11.5 6 8m10 3.500L18 8"/><circle cx="12" cy="9" r="1.2"/>', 'lotus': '<path d="M12 20c-4-2-6-6-6-10 3 1 5 3 6 6 1-3 3-5 6-6 0 4-2 8-6 10Z"/><path d="M12 16c-1-4 0-8 0-11 1 3 1 7 0 11Z"/>', 'mirror': '<circle cx="12" cy="10" r="6"/><path d="M12 16v5M9 21h6"/>', 'comb': '<path d="M4 8h16v3H4z"/><path d="M6 11v8M9 11v8M12 11v8M15 11v8M18 11v8"/>'}
+TITLE_ICON = {'Unisex': 'people', 'Diagnóstico': 'search', 'Producto profesional': 'bottle', 'Rutina clara': 'sparkle', 'Sin amoniaco': 'leaf', 'Tono a medida': 'palette', 'Raíz y canas': 'strand', 'Mantenimiento': 'sun', 'Matices': 'layers', 'Por etapas': 'steps', 'Fibra cuidada': 'shield', 'Revisiones': 'calendar', 'Menos encrespamiento': 'smooth', 'Sin promesas vacías': 'check', 'Rutina posterior': 'sparkle', 'Manos y pies': 'hand', 'Maquillaje': 'brush', 'Hilo y láser': 'thread', 'Bienestar': 'lotus', 'La prueba': 'mirror', 'Peinado': 'comb', 'Invitadas': 'people'}
+
+
+def ico(title):
+    body = ICONS[TITLE_ICON.get(title, 'sparkle')]
+    body = re.sub(r'<(path|circle|rect) ', r'<\1 pathLength="1" ', body)
+    return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">{body}</svg>'
+
+
 # ───────────── piezas ─────────────
 def kicker(t):
     return f'<p class="eyebrow">{t}</p>'
@@ -147,7 +158,7 @@ def hero(slug, eyebrow, title, intro, crumb=None, chips=(), cta=True, big=False,
     pos, a1, a2 = HERO[slug]
     svc = SERVICES.get(slug, {}).get('title', '')
     crumbs = f'<nav class="crumbs" aria-label="Migas de pan"><a href="index.html">Inicio</a><span>/</span><span>{crumb}</span></nav>' if crumb else ''
-    chip_html = '<div class="hero-chips">' + ''.join(f'<span>{c}</span>' for c in chips) + '</div>' if chips else ''
+    chip_html = ('<div class="hero-chips">' + (open_badge() if cta else '') + ''.join(f'<span>{c}</span>' for c in chips) + '</div>') if (chips or cta) else ''
     act = f'<div class="actions">{book("Pedir mi cita", svc)}<a class="link" href="#descubrir">Descubrir más <span aria-hidden="true">↓</span></a></div>' if cta else ''
     arches = ''
     if a1:
@@ -172,7 +183,7 @@ def header(active):
             f'<header class="header"><div class="header-in"><a href="index.html" class="brand" aria-label="AURA Organic Salón, inicio"><img src="assets/img/logo.webp" alt="" width="56" height="56"><span>AURA<small>ORGANIC SALÓN</small></span></a>'
             f'<nav class="desktop-nav" aria-label="Navegación principal">{items}</nav>'
             f'<div class="header-actions"><a class="header-phone" href="tel:{TEL}">{phone}642 63 69 70</a>{book("Tu momento AURA")}<button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span></button></div></div></header>'
-            f'<div class="mobile-menu" id="mobile-menu" hidden><nav aria-label="Navegación móvil">{items}</nav><div class="mobile-sub">{msub}<a href="cuidados.html">Cuidado en casa</a></div><a class="btn" href="tel:{TEL}">Llamar · 642 63 69 70</a></div>'
+            f'<div class="mobile-menu" id="mobile-menu" hidden><nav aria-label="Navegación móvil">{items}</nav><div class="mobile-sub">{msub}<a href="cuidados.html">Cuidado en casa</a></div>{social(labels=True)}<a class="btn" href="tel:{TEL}">Llamar · 642 63 69 70</a></div>'
             f'<div class="service-menu" id="service-menu"><div class="wrap"><div>{kicker("Elige cómo cuidarte")}<h2>Un cuidado<br><em>muy tuyo.</em></h2>{link("servicios", "Todos los servicios")}</div><div class="mega-grid">{mega}</div></div></div><div class="reading-progress" aria-hidden="true"></div>')
 
 
@@ -187,12 +198,14 @@ def footer():
     opts = ''.join('<option>' + v['title'] + '</option>' for v in SERVICES.values())
     svc = ''.join(f'<a href="{s}.html">{v["short"]}</a>' for s, v in SERVICES.items())
     return (closing() +
-            f'<footer><div class="wrap"><div class="footer-main"><div><p>Peluquería y estética unisex<br>con una mirada más natural.</p></div>'
+            f'<footer><div class="wrap"><div class="footer-main"><div><p>Peluquería y estética unisex<br>con una mirada más natural.</p>{social()}</div>'
             f'<div><h3>Servicios</h3>{svc}</div>'
             f'<div><h3>Ven a conocernos</h3><span>Av. Inmaculada Concepción, 42<br>38360 El Sauzal · Tenerife</span><a href="{GOOGLE}" target="_blank" rel="noopener">Cómo llegar ↗</a><a href="tel:{TEL}">642 63 69 70</a><a href="mailto:auraesteticasauzal@gmail.com">Escríbenos</a></div>'
             f'<div><h3>Sigue el día a día</h3><a href="{INSTAGRAM}" target="_blank" rel="noopener">Instagram ↗</a><a href="{FACEBOOK}" target="_blank" rel="noopener">Facebook ↗</a><a href="galeria.html">Galería</a><a href="cuidados.html">Cuidado en casa</a><a href="contacto.html">Organiza tu visita</a></div></div>'
             f'<div class="footer-mark" aria-hidden="true">AURA</div>'
             f'<div class="footer-bottom"><span>© 2026 AURA Organic Salón</span><span>BELLEZA CON RAÍCES · EL SAUZAL</span><a href="informacion.html">Información y privacidad</a></div></div></footer>'
+            f'<script type="application/json" id="hours-data">{hours_json()}</script>'
+            f'<div class="social-rail" aria-label="Redes sociales">{social()}</div>'
             f'<a class="whatsapp-float" href="https://wa.me/34642636970?text=Hola%20AURA%2C%20me%20gustar%C3%ADa%20pedir%20cita." target="_blank" rel="noopener" aria-label="Pedir cita por WhatsApp">{wa}<span>Hablemos</span></a>'
             f'<div class="mobile-dock"><a href="tel:{TEL}">Llamar</a>{book("Pedir cita", "", "")}<a href="{GOOGLE}" target="_blank" rel="noopener">Ruta</a></div>'
             f'<dialog id="booking" aria-labelledby="booking-title"><button class="dialog-close" data-close aria-label="Cerrar solicitud">×</button><div class="booking-head">{kicker("Tu momento empieza aquí")}<h2 id="booking-title">¿Qué te apetece<br><em>hacer por ti?</em></h2><p>Prepara tu mensaje. El equipo confirmará disponibilidad, hora y presupuesto por WhatsApp.</p></div>'
@@ -212,8 +225,8 @@ def page(slug, title, desc, body):
     html = (f'<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#150b05">'
             f'<title>{e(title)} · AURA Organic Salón · El Sauzal</title><meta name="description" content="{e(desc)}"><meta property="og:title" content="{e(title)} · AURA"><meta property="og:description" content="{e(desc)}"><meta property="og:type" content="website">'
             f'<meta property="og:image" content="{ORIGIN}/assets/img/ambiente-logo.webp"><meta property="og:locale" content="es_ES"><link rel="icon" type="image/png" href="assets/img/favicon.png">'
-            f'<link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>'
-            f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script></head><body data-page="{slug}">{header(slug)}<main id="contenido">{body}</main>{footer()}</body></html>')
+            f'<script>document.documentElement.classList.add("js");try{{if(sessionStorage.getItem("auraSeen"))document.documentElement.classList.add("seen")}}catch(e){{}}</script><link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>'
+            f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script></head><body data-page="{slug}"><div id="loader" aria-hidden="true"><div class="ring"><img src="assets/img/logo.webp" alt="" width="96" height="96"></div><span>AURA</span></div>{header(slug)}<main id="contenido">{body}</main>{footer()}</body></html>')
     (OUT / f'{slug}.html').write_text(html, encoding='utf8')
 
 
@@ -258,23 +271,170 @@ def works(keys, five=False):
     return f'<div class="works{" five" if five else ""}">{figs}</div>'
 
 
-def reviews():
-    data = [('Conchi Cabello', 'Me encanta el trato y los productos orgánicos. Y no tardan en darte cita.', '5'),
-            ('kali cabrera avila', 'Muy profesionales. Puntualidad, buen trato, te aconsejan y te dejan exactamente lo que tú quieres.', '4'),
-            ('Noemí Perez diaz', 'Desde que llegué, el ambiente, el buen rollo y la atención hicieron que me sintiera súper cómoda.', '5')]
-    cards = ''.join(f'<article class="review"><span class="stars" aria-label="{s} de 5 estrellas">{"★" * int(s)}{"☆" * (5 - int(s))}</span><blockquote>«{t}»</blockquote><div><strong>{n}</strong><span>Reseña de Google · extracto</span></div></article>' for n, t, s in data)
-    return (f'<section class="section dark grain reviews"><div class="wrap"><div class="section-head reveal"><div>{kicker("Lo que se siente, se cuenta")}<h2>El cariño<br><em>de quienes vuelven.</em></h2></div>'
-            f'<a class="google-score" href="{GOOGLE}" target="_blank" rel="noopener"><strong>4,8<span>/5</span></strong><div><span class="stars" aria-label="Valoración de Google">★★★★★</span><br><span>32 reseñas en Google</span></div></a></div>'
-            f'<div class="review-track" tabindex="0" aria-label="Testimonios de Google">{cards}</div>'
-            f'<div class="review-bottom"><p>Extractos visibles en Google el 20 de noviembre de 2026. La valoración puede cambiar.</p><div><button class="round-button" data-review="prev" aria-label="Reseña anterior">‹</button><button class="round-button" data-review="next" aria-label="Siguiente reseña">›</button></div></div></div></section>')
+SOC_ICONS = {
+    'instagram': '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".8" fill="currentColor"/>',
+    'facebook': '<path d="M14 8.5h2V5.5h-2.6C11 5.5 10 7 10 9v1.5H8v3h2V20h3v-6.5h2.2l.5-3H13V9.3c0-.5.3-.8 1-.8Z"/>',
+    'whatsapp': '<path d="M20 11.5a8 8 0 0 1-11.6 7.2L4 20l1.3-4.4A8 8 0 1 1 20 11.5Z"/><path d="M9 8c0 4 3 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>',
+    'maps': '<path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10Z"/><circle cx="12" cy="11" r="2.2"/>',
+}
+
+
+def social(labels=False, cls=''):
+    items = [('instagram', 'Instagram', INSTAGRAM), ('facebook', 'Facebook', FACEBOOK), ('whatsapp', 'WhatsApp', 'https://wa.me/34642636970'), ('maps', 'Cómo llegar', GOOGLE)]
+    out = ''
+    for k, name, url in items:
+        svg = f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{SOC_ICONS[k]}</svg>'
+        out += f'<a class="soc" href="{url}" target="_blank" rel="noopener" aria-label="{name}" title="{name}">{svg}' + (f'<span>{name}</span>' if labels else '') + '</a>'
+    return f'<div class="social {cls}{" labeled" if labels else ""}">{out}</div>'
 
 
 def ig_wall():
-    wall = [('recogido-collage', ig('DffQEiTgNtk')), ('novia-1', ig('DezpExfjv0U')), ('arkhe-expositor', ig('DegxbahAvfA')), ('balayage', ig('DTylPUPjEwq')),
-            ('equipo', ig('DefN9xpgI5v')), ('opi-jelly', ig('DKSFYKYIlI7')), ('largo-reflejos', ig('DcGdB7_AtnT')), ('aniversario-arco', ig('DGqkEoDom6-'))]
-    cells = ''.join(f'<a class="reveal" style="--d:{(i % 4) * .08}s" href="{u}" target="_blank" rel="noopener" aria-label="Ver publicación en Instagram">{img(n, "Publicación de AURA en Instagram")}</a>' for i, (n, u) in enumerate(wall))
-    return (f'<section class="section"><div class="wrap"><div class="section-head reveal"><div>{kicker("La vida en el salón")}<h2>Muy real.<br><em>Muy AURA.</em></h2></div><p>Cabello, manos, recogidos y el equipo que lo hace posible. Fotografías publicadas por el propio salón.</p></div>'
-            f'<div class="ig-grid">{cells}</div><div class="ig-foot"><p class="muted">252 publicaciones · 277 seguidores en Instagram</p>{ext(INSTAGRAM, "@aurasalonsauzal", "btn btn--dark")}</div></div></section>')
+    wall = [('recogido-collage', ig('DffQEiTgNtk'), 'Recogido visto desde varios ángulos'), ('novia-1', ig('DezpExfjv0U'), 'Novia con peinado y maquillaje'), ('arkhe-expositor', ig('DegxbahAvfA'), 'Cuidado capilar Arkhē'), ('balayage', ig('DTylPUPjEwq'), 'Balayage con ondas'),
+            ('equipo', ig('DefN9xpgI5v'), 'El equipo de AURA'), ('opi-jelly', ig('DKSFYKYIlI7'), 'Esmaltes OPI'), ('largo-reflejos', ig('DcGdB7_AtnT'), 'Melena larga con reflejos'), ('aniversario-arco', ig('DGqkEoDom6-'), 'Dos años de AURA')]
+    reels = [('anabel-reel', ig('Df5ExgsA02z', 'reel'), '¡Y ahora le tocó a Anabel!'), ('lavado', ig('DegzEMiAZeC', 'reel'), 'Momento peluquería: tu pelo no es uno más'), ('ritual-color', ig('DfibHMSAcIS', 'reel'), 'Cuidarte, verte bien y apostar por la calidad')]
+    play = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>'
+    rl = ''.join(f'<a class="reel reveal" style="--d:{i * .1}s" href="{u}" target="_blank" rel="noopener" aria-label="Ver reel: {e(t)}">{img(n, t)}<span class="play">{play}</span><span class="cap">{t}</span><span class="tag">Reel</span></a>' for i, (n, u, t) in enumerate(reels))
+    cells = ''.join(f'<a class="reveal" style="--d:{(i % 4) * .08}s" href="{u}" target="_blank" rel="noopener" aria-label="Ver en Instagram: {e(t)}">{img(n, t)}</a>' for i, (n, u, t) in enumerate(wall))
+    profile = (f'<aside class="ig-profile reveal"><div class="ig-head"><img src="assets/img/logo.webp" alt="" width="84" height="84"><div><strong>aurasalonsauzal</strong><span>AURA SALON · Salud/belleza</span></div></div>'
+               f'<p>Bienvenida a nuestro espacio 🌿 Aquí creemos que la belleza empieza por sentirte bien contigo.</p>'
+               f'<ul class="ig-stats"><li><b>252</b><span>publicaciones</span></li><li><b>277</b><span>seguidores</span></li><li><b>315</b><span>seguidos</span></li></ul>'
+               f'<div class="actions">{ext(INSTAGRAM, "Seguir en Instagram", "btn")}</div>'
+               f'<div class="fb-card"><strong>AURA Organic Salón</strong><span>Facebook · Estilista de peluquería · 90 seguidores</span>{ext(FACEBOOK, "Visitar Facebook")}</div>{social()}</aside>')
+    return (f'<section class="section pearl" id="redes"><div class="wrap"><div class="section-head reveal"><div>{kicker("Síguenos")}<h2>La vida en el salón,<br><em>cada día.</em></h2></div><p>Cabello, manos, recogidos y el equipo que lo hace posible. Fotografías y reels publicados por el propio salón.</p></div>'
+            f'<div class="ig-layout">{profile}<div class="ig-main"><div class="reels">{rl}</div><div class="ig-grid">{cells}</div>'
+            f'<p class="muted" style="margin-top:20px">Cifras de Instagram y Facebook consultadas el 20 de noviembre de 2026. Los enlaces se abren en cada red; esta web no carga sus contenidos ni rastreadores.</p></div></div></div></section>')
+
+
+# ───────────── componentes dinámicos reutilizables (v3.2) ─────────────
+ICONS.update({
+    'phone': '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/>',
+    'mail': '<rect x="3" y="5.5" width="18" height="13" rx="3"/><path d="m4 8 8 6 8-6"/>',
+    'chat': '<path d="M20 11.5a8 8 0 0 1-11.6 7.2L4 20l1.3-4.4A8 8 0 1 1 20 11.5Z"/><path d="M9 8c0 4 3 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>',
+    'pin': '<path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10Z"/><circle cx="12" cy="11" r="2.2"/>',
+    'wifi': '<path d="M3 9.5a13 13 0 0 1 18 0"/><path d="M6 13a8.5 8.5 0 0 1 12 0"/><path d="M9 16.5a4 4 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".6"/>',
+    'wc': '<circle cx="7.5" cy="5" r="1.8"/><path d="M7.5 8.5V15M5 11h5M6 20l1.5-5 1.5 5"/><circle cx="16.5" cy="5" r="1.8"/><path d="M14 9h5l-1 5h-3zM15.5 14v6M17.5 14v6"/>',
+    'parking': '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M10 16V8h3a2.5 2.5 0 0 1 0 5h-3"/>',
+    'card': '<rect x="3" y="6" width="18" height="12" rx="3"/><path d="M3 10.5h18M7 15h4"/>',
+    'smile': '<circle cx="12" cy="12" r="9"/><path d="M8.5 14c1 1.5 2 2 3.5 2s2.5-.5 3.5-2"/><circle cx="9" cy="10" r=".6"/><circle cx="15" cy="10" r=".6"/>',
+    'heart': '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z"/>',
+    'access': '<circle cx="12" cy="4.5" r="1.6"/><path d="M12 8v6h5l2.5 5M12 11h5"/><path d="M8.5 13.5a5 5 0 1 0 7 6"/>',
+    'camera': '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/>',
+    'clock': '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+})
+
+
+def ico(title, key=None):
+    body = ICONS[key or TITLE_ICON.get(title, 'sparkle')]
+    body = re.sub(r'<(path|circle|rect) ', r'<\1 pathLength="1" ', body)
+    return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">{body}</svg>'
+
+
+def _sid(sid):
+    return f' id="{sid}"' if sid else ''
+
+
+def pillars_sec(items, kick, h2, intro='', cls='pearl', sid='', dense=False, note=''):
+    cards = ''
+    for i, it in enumerate(items):
+        t, p, k = it[0], it[1], it[2]
+        href = it[3] if len(it) > 3 else None
+        inner = f'<span class="ico" aria-hidden="true">{ico(t, k)}</span><h3>{t}</h3><p>{p}</p>'
+        d = f' style="--d:{(i % 4) * .1}s"'
+        if href:
+            tgt = ' target="_blank" rel="noopener"' if href.startswith('http') else ''
+            cards += f'<a class="pillar pillar--link reveal" href="{href}"{tgt}{d}>{inner}<span class="go" aria-hidden="true">→</span></a>'
+        else:
+            cards += f'<article class="pillar reveal"{d}>{inner}</article>'
+    c = ' dark grain' if cls == 'dark' else (f' {cls}' if cls else '')
+    n = f'<p class="muted pillars-note">{note}</p>' if note else ''
+    return (f'<section class="section{c}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div>'
+            f'<div class="pillars{" dense" if dense else ""}">{cards}</div>{n}</div></section>')
+
+
+def steps_sec(items, kick, h2, intro='', cta=None, cls='', sid=''):
+    st = ''.join(f'<article class="step reveal" style="--d:{i * .12}s"><span class="dot">{i + 1}</span><h3>{t}</h3><p>{p}</p></article>' for i, (t, p) in enumerate(items))
+    act = f'<div class="actions" style="justify-content:center">{cta}</div>' if cta else ''
+    c = f' {cls}' if cls else ''
+    return (f'<section class="section{c}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div><div class="steps">{st}</div>{act}</div></section>')
+
+
+def xp_sec(key, tabs, kick, h2, intro='', cls='dark grain', sid=''):
+    tb = ''.join(f'<button class="xp-tab" role="tab" id="tab-{key}-{i}" aria-controls="pn-{key}-{i}" aria-selected="{"true" if i == 0 else "false"}"><span class="nr">0{i + 1}</span><span class="t">{t["title"]}</span><span class="bar"></span></button>' for i, t in enumerate(tabs))
+    pn = ''.join(f'<article class="xp-panel{" is-active" if i == 0 else ""}" role="tabpanel" id="pn-{key}-{i}" aria-labelledby="tab-{key}-{i}"><figure class="arch">{img(t["img"], t["alt"])}</figure><div><h3>{t["title"]}</h3><p>{t["p1"]}</p>' + (f'<p>{t["p2"]}</p>' if t.get('p2') else '') + (f'<div class="actions" style="margin-top:26px">{t["cta"]}</div>' if t.get('cta') else '') + '</div></article>' for i, t in enumerate(tabs))
+    return (f'<section class="section {cls}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div>'
+            f'<div class="xp reveal"><div class="xp-tabs" role="tablist" aria-label="{kick}">{tb}</div><div class="xp-panels">{pn}</div></div></div></section>')
+
+
+# ───────────── horario ─────────────
+# Fuente: ficha de Google del salón (consulta del 20/11/2026). Minutos desde las 0:00. 0 = domingo.
+HOURS = {1: [(540, 1110)], 2: [(540, 1110)], 3: [(540, 1110)], 4: [(540, 1110)], 5: [(540, 1110)], 6: [(540, 840)], 0: []}
+DAYS = [(1, 'Lunes'), (2, 'Martes'), (3, 'Miércoles'), (4, 'Jueves'), (5, 'Viernes'), (6, 'Sábado'), (0, 'Domingo')]
+
+
+def hhmm(m):
+    return f'{m // 60}:{m % 60:02d}'
+
+
+def hours_json():
+    return json.dumps({'tz': 'Atlantic/Canary', 'days': {str(k): [list(x) for x in v] for k, v in HOURS.items()}})
+
+
+def open_badge():
+    return '<a class="open-now" href="contacto.html#horario" data-open-badge data-state="unknown"><span class="dot" aria-hidden="true"></span><span class="txt">Horario de hoy</span></a>'
+
+
+def week_card():
+    s0, s1 = 7 * 60, 20 * 60
+    rows = ''
+    for d, name in DAYS:
+        segs = HOURS[d]
+        if segs:
+            s, e_ = segs[0]
+            bar = f'<i class="seg" style="left:{(s - s0) / (s1 - s0) * 100:.2f}%;width:{(e_ - s) / (s1 - s0) * 100:.2f}%"></i>'
+            txt = f'{hhmm(s)} – {hhmm(e_)}'
+        else:
+            bar, txt = '', 'Cerrado'
+        rows += f'<li data-day="{d}"><span class="dn">{name}<em class="today-tag">Hoy</em></span><span class="track">{bar}<b class="now" aria-hidden="true"></b></span><span class="ht">{txt}</span></li>'
+    ticks = ''.join(f'<span style="left:{(h * 60 - s0) / (s1 - s0) * 100:.2f}%">{h}h</span>' for h in (8, 10, 12, 14, 16, 18))
+    return (f'<div class="week" id="horario" data-s0="{s0}" data-s1="{s1}"><div class="week-status" data-open-status data-state="unknown"><span class="pulse" aria-hidden="true"></span><div><strong class="big">Consultando…</strong><span class="sub">Horario de Canarias</span></div></div>'
+            f'<div class="scale" aria-hidden="true"><span></span><div class="ticks">{ticks}</div><span></span></div><ul>{rows}</ul>'
+            f'<p class="muted">Horario según la ficha de Google del salón (consulta del 20 de noviembre de 2026). Se recomienda pedir cita, aunque también atienden sin cita si hay hueco. Confirma festivos y cambios con el equipo.</p></div>')
+
+
+# ───────────── reseñas (10 extractos reales de Google) ─────────────
+REVIEWS = [
+    ('Noemí Perez diaz', 'Una tarde espectacular en Aura. Desde que llegué, el ambiente, el buen rollo y la atención hicieron que me sintiera súper cómoda y disfrutara muchísimo de la experiencia.', 'Ambiente'),
+    ('Carmen Roig Sánchez', 'Estoy encantada con el tratamiento de keratina que me he hecho en Aura, el resultado es increíble, además de que me trataron como a una reina. Anabel y su equipo son unas grandes profesionales, lo recomiendo muchísimo.', 'Keratina'),
+    ('Victoria Ponce', 'Servicio impecable. Me entendió a la perfección a la hora de hacerme el corte y me quedó ideal, además usa unos productos espectaculares. Ella es un encanto y una gran profesional.', 'Corte'),
+    ('Asoria Toledo', 'La mejor peluquería de Tenerife. Productos de calidad y una atención y servicio 5 estrellas. La dueña, Anabel, es un encanto y ofrece siempre a sus clientes un trato inmejorable.', 'Trato'),
+    ('Ithaisa Martín Bello', 'De las mejores peluquerías, trato cercano, profesionalidad y de 10 el resultado. Me llevé una mascarilla y noto el brillo que deja en el pelo con cada lavado.', 'Productos'),
+    ('Atteneri Martín Bello', 'Llevé a mi hija a cortarse el pelo y el resultado fue increíble, nadie le había dejado el pelo tan bien. La recomendaré a todo el mundo sin dudarlo.', 'Corte infantil'),
+    ('Ruth Avero Morales', 'Me hice la pedicura y manicura permanente para una boda y semanas después todavía estaban perfectas. Es una gran profesional y una persona encantadora.', 'Manicura'),
+    ('Fany Ravelo', 'Profesionalidad, cercanía y mucho mimo en cada detalle.', 'Mimo'),
+    ('kali cabrera avila', 'Muy profesionales. Puntualidad, buen trato, te aconsejan y te dejan exactamente lo que tú quieres. Sin lugar a dudas, vuelvo en breve.', 'Asesoramiento'),
+    ('Conchi Cabello', 'Me encanta el trato y los productos orgánicos. Y no tardan en darte cita.', 'Productos orgánicos'),
+]
+
+
+def reviews():
+    cards = ''.join(
+        f'<article class="review"><span class="qmark" aria-hidden="true">“</span><blockquote>{t}</blockquote><div class="who"><span class="av" aria-hidden="true">{n[0].upper()}</span><div><strong>{n}</strong><span>Reseña de Google · {tag}</span></div></div></article>'
+        for n, t, tag in REVIEWS)
+    chips = ''.join(f'<span>{a} <b>{c}</b></span>' for a, c in [('productos', 3), ('mimo', 2), ('cita', 2), ('pelo rizado', 2), ('tratamiento', 2)])
+    return (f'<section class="section dark grain reviews"><div class="wrap"><div class="section-head reveal"><div>{kicker("Lo que se siente, se cuenta")}<h2>El cariño<br><em>de quienes vuelven.</em></h2></div>'
+            f'<a class="google-score" href="{GOOGLE}" target="_blank" rel="noopener"><strong>4,8<span>/5</span></strong><div><span class="stars" aria-label="Valoración de Google">★★★★★</span><br><span>32 reseñas en Google</span></div></a></div>'
+            f'<div class="rev-chips reveal" aria-label="Temas que más mencionan en Google"><em>Lo que más mencionan:</em>{chips}</div>'
+            f'<div class="review-track" tabindex="0" aria-label="Testimonios de Google">{cards}</div>'
+            f'<div class="review-bottom"><p>Diez extractos de las 32 reseñas visibles en Google el 20 de noviembre de 2026. La valoración puede cambiar.</p><div>{ext(GOOGLE, "Leerlas todas en Google")}<button class="round-button" data-review="prev" aria-label="Reseña anterior">‹</button><button class="round-button" data-review="next" aria-label="Siguiente reseña">›</button></div></div></div></section>')
+
+
+# ───────────── test «¿Qué necesita tu pelo hoy?» ─────────────
+def quiz_sec():
+    data = {s: {'title': v['title'], 'img': CARD[s], 'url': f'{s}.html'} for s, v in SERVICES.items()}
+    return (f'<section class="section" id="test"><div class="wrap"><div class="section-head reveal"><div>{kicker("Tu test AURA")}<h2>¿Qué necesita<br><em>tu pelo hoy?</em></h2></div><p>Cuatro preguntas y te orientamos hacia el cuidado que mejor encaja. Es orientativo: el equipo lo confirma al verte.</p></div>'
+            f'<div class="quiz reveal" data-quiz><div class="quiz-top"><span class="qcount">Pregunta 1 de 4</span><div class="qbar"><i></i></div><button type="button" class="link qback" hidden>← Atrás</button></div><div class="qbody" aria-live="polite"></div>'
+            f'<noscript><p>Activa JavaScript para hacer el test o <a href="servicios.html">explora la carta de servicios</a>.</p></noscript></div>'
+            f'<script type="application/json" id="quiz-data">{json.dumps(data, ensure_ascii=False)}</script></div></section>')
 
 
 # ───────────── portada ─────────────
@@ -312,43 +472,82 @@ def home():
     team = (f'<section class="section pearl"><div class="wrap team-grid"><div class="team-photo reveal"><div class="frame">{img("equipo", "Anabel y las dos profesionales del equipo de AURA")}</div><div class="small">{img("aniversario-anabel", "Anabel junto a un arco de globos en el aniversario")}</div></div>'
             f'<div class="reveal" style="--d:.15s">{kicker("Las manos detrás de AURA")}<h2>Buenas manos.<br><em>Mejor energía.</em></h2><p style="margin-top:26px">Anabel y sus compañeras comparten un compromiso: que cada persona se sienta acompañada desde la primera conversación. Más de veinte años de oficio y la misma ilusión que el primer día.</p>'
             f'<blockquote class="quote-big">«Ya van 2 años de cumplir un sueño.»<br><small style="font:500 .8rem var(--sans);letter-spacing:.14em;color:var(--mute)">— Del Instagram de AURA</small></blockquote><div class="actions">{link("salon", "Entra en nuestro mundo", "btn btn--dark")}</div></div></div></section>')
-    finder = (f'<section class="section"><div class="wrap finder-grid"><div class="reveal">{kicker("Empieza por una sensación")}<h2>Hoy me<br><em>apetece…</em></h2><p style="margin-top:22px">Un poco de luz. Más suavidad. O, simplemente, un rato para ti.</p></div>'
-              f'<div class="reveal" style="--d:.15s"><div class="finder-options" role="group" aria-label="Elige tu objetivo"><button data-find="color" aria-pressed="true" class="active">Dar luz a mi melena</button><button data-find="soft" aria-pressed="false">Más suavidad</button><button data-find="event" aria-pressed="false">Un día especial</button><button data-find="care" aria-pressed="false">Un rato para mí</button></div>'
-              f'<div id="finder-result" aria-live="polite"><h3>La luz empieza en un buen diagnóstico.</h3><p>Explora el color personalizado y el cuidado de rubios. Te ayudamos a elegir el tono y el proceso que encajen con tu cabello.</p>{link("rubios", "Explorar rubios y matices")}</div></div></div></section>')
     faq = faqs([('¿Cómo puedo reservar mi primera visita?', 'Prepara tu mensaje de WhatsApp desde el botón de cita o llama al 642 63 69 70. El equipo confirmará contigo la disponibilidad y el servicio.'),
                 ('¿Dónde está el salón?', 'En la avenida Inmaculada Concepción, 42, en El Sauzal, Tenerife. En Contacto encontrarás el enlace para preparar tu ruta.'),
                 ('¿Qué cuidado me recomendáis?', 'Antes de elegir el servicio escuchamos lo que buscas y valoramos tu cabello o tus necesidades. Así podemos recomendarte una propuesta personalizada.'),
                 ('¿Puedo consultar el presupuesto antes de ir?', 'Sí. Cuéntanos qué necesitas. Algunos trabajos requieren ver el cabello para concretar el importe y el tiempo de la cita.')])
-    return h + ticker + manifesto + services + tf + space + story + bridal + brands + team + reviews() + ig_wall() + finder + faq
+    pillars = pillars_sec([
+        ('Escuchamos primero', 'Tu pelo no es uno más: empezamos por escucharte y mirar cómo está tu cabello.', 'people'),
+        ('Producto profesional', 'Líneas como Arkhē, Olaplex u OPI, explicadas con transparencia.', 'bottle'),
+        ('Para todas las personas', 'Salón unisex, amigable con la comunidad LGBTQ+ y espacio seguro para personas trans, según su ficha en Google.', 'heart'),
+        ('El cuidado continúa', 'Te orientamos para llevar la rutina a casa, sin pasos de más.', 'sparkle')],
+        'Por qué AURA', 'Lo que nos<br><em>hace distintas.</em>', 'Cuatro ideas que guían cada cita.', cls='pearl')
+    steps = steps_sec([
+        ('Escríbenos o llámanos', 'Por WhatsApp o teléfono: cuéntanos qué necesitas.'),
+        ('Confirmamos contigo', 'Disponibilidad, duración orientativa y presupuesto.'),
+        ('Te escuchamos', 'Miramos tu cabello y acordamos la propuesta antes de empezar.'),
+        ('Disfruta y llévate tu rutina', 'Resultado, consejos y cuidado para casa.')],
+        'Tu primera visita', 'Así será<br><em>tu primera vez.</em>', 'Sin sorpresas: sabrás qué pasa en cada momento.', cta=book('Pedir mi primera cita'), sid='primera-visita')
+    return h + ticker + manifesto + pillars + services + tf + space + story + bridal + brands + team + steps + reviews() + ig_wall() + quiz_sec() + faq
 
 
 page('index', 'Belleza con raíces', 'Peluquería y estética orgánica en El Sauzal. Color, keratina, novias y bienestar con el cuidado cercano de AURA.', home())
 
 
 # ───────────── páginas de servicio ─────────────
+EXTRA = {
+    'peluqueria': dict(
+        tabs=['largo-reflejos', 'bob-miel', 'corte-pixie', 'lavado'],
+        pillars=[('Unisex', 'Un salón para todas las personas, identidades y edades.'), ('Diagnóstico', 'Miramos tu cabello antes de decidir nada.'), ('Producto profesional', 'Líneas como Arkhē u Olaplex, explicadas.'), ('Rutina clara', 'Pasos útiles, sin añadir de más.')],
+        steps=[('Conversación', 'Nos cuentas qué te gusta, qué te cuesta y qué cambio tienes en mente.'), ('Diagnóstico', 'Observamos textura, fibra y trabajos anteriores.'), ('Propuesta', 'Te explicamos el corte, el color o el cuidado antes de empezar.'), ('Acabado y rutina', 'Te mostramos cómo mantenerlo en casa con gestos sencillos.')]),
+    'coloracion': dict(
+        tabs=['cobrizo', 'ondas-castano', 'balayage', 'rubio-capas'],
+        pillars=[('Sin amoniaco', 'Una de las opciones del salón, según el diagnóstico.'), ('Tono a medida', 'Partimos de tu base natural y de tus trabajos previos.'), ('Raíz y canas', 'Valoramos cobertura, matiz y crecimiento.'), ('Mantenimiento', 'Te orientamos para que el brillo dure entre citas.')],
+        steps=[('Historia de tu cabello', 'Color actual, tintes anteriores y sensibilidad del cuero cabelludo.'), ('Elegimos el tono', 'Hablamos de matices, raíz y cuánto mantenimiento quieres.'), ('Aplicación y control', 'Seguimos el proceso del fabricante y revisamos el resultado.'), ('Cuidado posterior', 'Productos y tiempos para revisar raíz o matiz.')]),
+    'rubios': dict(
+        tabs=['rubio-ondas', 'bob-rubio', 'rubio-rizos', 'largo-reflejos'],
+        pillars=[('Matices', 'Rubios cálidos, luminosos o más fríos, según tu piel.'), ('Por etapas', 'Los cambios grandes pueden requerir varias visitas.'), ('Fibra cuidada', 'Valoramos el estado del cabello antes de aclarar.'), ('Revisiones', 'Cada melena pide su propio ritmo de retoque.')],
+        steps=[('Punto de partida', 'Color actual, porosidad y tratamientos anteriores.'), ('Plan', 'Acordamos si el cambio es en una visita o por etapas.'), ('Matiz y acabado', 'Afinamos los reflejos y la luminosidad final.'), ('Mantenimiento', 'Productos con pigmento: cuáles, cuánto y cada cuánto.')]),
+    'keratina': dict(
+        tabs=['letrero-liso', 'liso-oscuro', 'alisado-hialuronico', 'moreno-liso'],
+        pillars=[('Menos encrespamiento', 'Una melena más manejable y un acabado pulido.'), ('Diagnóstico', 'Revisamos la fibra y los servicios anteriores.'), ('Sin promesas vacías', 'El acabado depende de tu cabello y del producto.'), ('Rutina posterior', 'Instrucciones claras según la fórmula aplicada.')],
+        steps=[('Tu objetivo', 'Suavizar, controlar el encrespamiento o buscar un efecto más liso.'), ('Diagnóstico de fibra', 'Preguntamos por decoloraciones, alisados y otros servicios.'), ('Protocolo', 'Aplicamos el tratamiento acordado y realizamos el acabado indicado.'), ('Cuidados', 'Cuándo lavar, qué productos usar y qué evitar.')]),
+    'estetica': dict(
+        tabs=['opi-repair', 'real-12', 'unas-puesto', 'real-05'],
+        pillars=[('Manos y pies', 'Manicura y pedicura con esmaltes como OPI o Masglo vegano.'), ('Maquillaje', 'Una propuesta personal para tu celebración.'), ('Hilo y láser', 'Consulta zonas, valoración y preparación.'), ('Bienestar', 'Presoterapia y cuidados con valoración previa.')],
+        steps=[('Elegimos el cuidado', 'Cuéntanos qué te apetece o qué notas en tu piel.'), ('Valoración previa', 'Comentamos sensibilidades, antecedentes y preparación.'), ('Tu momento', 'Un rato tranquilo, con el tiempo acordado.'), ('Recomendaciones', 'Consejos para que el resultado te acompañe en casa.')]),
+    'novias': dict(
+        tabs=['recogido-1', 'novia-maquillaje', 'recogido-trenza', 'invitada-sombrero'],
+        pillars=[('La prueba', 'Un espacio para decidir peinado y maquillaje con calma.'), ('Peinado', 'Recogidos con textura, torsiones y melenas sueltas.'), ('Maquillaje', 'Intensidad y protagonismo elegidos juntas.'), ('Invitadas', 'También preparamos a quienes te acompañan.')],
+        steps=[('Referencias', 'Vestido, escote, accesorios y la forma de celebrar.'), ('Prueba', 'Exploramos el peinado y el maquillaje y hacemos ajustes.'), ('Planificación', 'Horarios, personas y duración, acordados con el salón.'), ('Tu día', 'Disfruta: los detalles ya están pensados.')]),
+}
+ICON = {0: '✦', 1: '◐', 2: '❋', 3: '✺'}
+
 for slug, d in SERVICES.items():
     m = PAGE_MEDIA[slug]
+    x = EXTRA[slug]
     h = hero(slug, d['eyebrow'], d['heading'], d['intro'], crumb=d['short'], chips=('Con cita', 'Diagnóstico personalizado', 'El Sauzal'))
-    nav = ('<nav class="page-index page-nav" aria-label="En esta página"><div class="wrap"><a href="#filosofia">El cuidado</a><a href="#opciones">Tu propuesta</a>'
+    nav = ('<nav class="page-index page-nav" aria-label="En esta página"><div class="wrap"><a href="#filosofia">El cuidado</a><a href="#descubrir">Qué incluye</a><a href="#cita">Tu cita</a><a href="#opciones">Tu propuesta</a>'
            + ('<a href="#transformaciones">Antes y después</a>' if m['pairs'] else '') + '<a href="#trabajos">Trabajos reales</a><a href="#preguntas">Tus dudas</a>' + book('Consultar este servicio', d['title'], '') + '</div></nav>')
+    words = ''.join(f'<span>{t}</span><b>✦</b>' for t, _ in x['pillars'])
+    ticker = f'<div class="ticker" aria-hidden="true"><div>{words * 6}</div></div>'
     quote = f'<section class="quote-band emerald grain" id="filosofia"><div class="wrap reveal">{kicker("Nuestra forma de hacerlo")}<p>«{d["quote"]}»</p></div></section>'
-    secs = ''
-    for i, (title, p1, p2) in enumerate(d['sections']):
-        nr = f'<span class="nr">0{i + 1}</span>'
-        if i % 2 == 0:
-            ph = m['sec'][i // 2]
-            rev = ' reverse' if i == 2 else ''
-            secs += (f'<section class="section{" pearl" if i == 0 else ""}" id="{"descubrir" if i == 0 else f"s{i}"}"><div class="wrap editorial{rev}"><div class="photo reveal"><div class="frame">{img(ph, d["title"] + ": fotografía real de AURA")}</div></div>'
-                     f'<div class="reveal" style="--d:.12s">{nr}<h2>{title}</h2><p>{p1}</p><p>{p2}</p></div></div></section>')
-        else:
-            secs += f'<section class="section dark grain"><div class="wrap text-two"><div class="reveal">{nr}<h2>{title}</h2></div><div class="reveal" style="--d:.12s"><p>{p1}</p><p>{p2}</p></div></div></section>'
+    pillars = ('<section class="section pearl"><div class="wrap"><div class="section-head reveal"><div>' + kicker('Lo esencial') + '<h2>Lo que<br><em>encontrarás.</em></h2></div><p>Cuatro ideas que guían este cuidado en AURA.</p></div><div class="pillars">'
+               + ''.join(f'<article class="pillar reveal" style="--d:{i * .1}s"><span class="ico" aria-hidden="true">{ico(t)}</span><h3>{t}</h3><p>{p}</p></article>' for i, (t, p) in enumerate(x['pillars'])) + '</div></div></section>')
+    tabs = ''.join(f'<button class="xp-tab" role="tab" id="tab-{slug}-{i}" aria-controls="pn-{slug}-{i}" aria-selected="{"true" if i == 0 else "false"}"><span class="nr">0{i + 1}</span><span class="t">{t}</span><span class="bar"></span></button>' for i, (t, _, _) in enumerate(d['sections']))
+    panels = ''.join(f'<article class="xp-panel{" is-active" if i == 0 else ""}" role="tabpanel" id="pn-{slug}-{i}" aria-labelledby="tab-{slug}-{i}"><figure class="arch">{img(x["tabs"][i], d["title"] + ": fotografía real de AURA")}</figure><div><h3>{t}</h3><p>{p1}</p><p>{p2}</p></div></article>' for i, (t, p1, p2) in enumerate(d['sections']))
+    explorer = (f'<section class="section dark grain" id="descubrir"><div class="wrap"><div class="section-head reveal"><div>{kicker("Qué incluye")}<h2>El cuidado,<br><em>paso a paso.</em></h2></div><p>Elige un apartado o déjate llevar: cambia solo.</p></div>'
+                f'<div class="xp reveal"><div class="xp-tabs" role="tablist" aria-label="Apartados de {d["short"]}">{tabs}</div><div class="xp-panels">{panels}</div></div></div></section>')
+    steps = (f'<section class="section" id="cita"><div class="wrap"><div class="section-head reveal"><div>{kicker("Tu cita")}<h2>Así será<br><em>tu visita.</em></h2></div><p>Sin sorpresas: sabrás qué ocurre en cada momento.</p></div><div class="steps">'
+             + ''.join(f'<article class="step reveal" style="--d:{i * .12}s"><span class="dot">{i + 1}</span><h3>{t}</h3><p>{p}</p></article>' for i, (t, p) in enumerate(x['steps'])) + '</div>'
+             f'<div class="actions" style="justify-content:center">{book("Pedir mi cita", d["title"])}</div></div></section>')
     opts = ''.join(f'<article class="option reveal" style="--d:{i * .1}s"><span class="nr">0{i + 1}</span><h3>{t}</h3><p>{p}</p><div class="row">{link(s, "Conocer más")}{book("Consultar mi caso", d["title"], "link")}</div></article>' for i, (t, p, s) in enumerate(d['options']))
-    options = f'<section class="section" id="opciones"><div class="wrap"><div class="section-head reveal"><div>{kicker("A tu medida")}<h2>¿Por dónde<br><em>empezamos?</em></h2></div></div><div class="options">{opts}</div><p class="budget-note">Cada propuesta se valora de forma personal. Consulta el tiempo y el presupuesto antes de confirmar tu cita.</p></div></section>'
+    options = f'<section class="section pearl" id="opciones"><div class="wrap"><div class="section-head reveal"><div>{kicker("A tu medida")}<h2>¿Por dónde<br><em>empezamos?</em></h2></div></div><div class="options">{opts}</div><p class="budget-note">Cada propuesta se valora de forma personal. Consulta el tiempo y el presupuesto antes de confirmar tu cita.</p></div></section>'
     tf = transform(m['pairs']) if m['pairs'] else ''
-    wk = (f'<section class="section {"" if m["pairs"] else "pearl"}" id="trabajos"><div class="wrap"><div class="section-head reveal"><div>{kicker("Hecho en AURA")}<h2>El cuidado<br><em>toma forma.</em></h2></div>{link("galeria", "Ver todos los trabajos")}</div>{works(m["works"], five=len(m["works"]) == 5)}</div></section>')
+    wk = (f'<section class="section" id="trabajos"><div class="wrap"><div class="section-head reveal"><div>{kicker("Hecho en AURA")}<h2>El cuidado<br><em>toma forma.</em></h2></div>{link("galeria", "Ver todos los trabajos")}</div>{works(m["works"], five=len(m["works"]) == 5)}</div></section>')
     others = [s for s in SERVICES if s != slug][:3]
     rel = f'<section class="section pearl"><div class="wrap"><div class="section-head reveal"><div>{kicker("Sigue explorando")}<h2>También te<br><em>puede gustar.</em></h2></div></div>{svc_cards(others)}</div></section>'
-    page(slug, d['title'], d['intro'], h + nav + quote + secs + options + tf + wk + faqs(d['faq'], dark=True) + rel)
+    page(slug, d['title'], d['intro'], h + nav + ticker + quote + pillars + explorer + steps + options + tf + wk + faqs(d['faq'], dark=True) + rel)
 
 
 # ───────────── servicios ─────────────
@@ -377,11 +576,34 @@ page('salon', 'El salón y su equipo', 'Conoce a las tres profesionales de AURA 
 
 
 # ───────────── galería ─────────────
+def _gtab(title, im, alt, p1, p2, cat):
+    return dict(title=title, img=im, alt=alt, p1=p1, p2=p2, cta=f'<button class="btn" type="button" data-goto="{cat}">Ver fotos de {title.lower()}</button>')
+
+
 page('galeria', 'Trabajos reales de AURA', 'Explora fotografías reales de color, recogidos, manicuras, productos y del equipo de AURA. Filtra y amplía cada trabajo.',
      hero('galeria', 'El álbum AURA', 'El álbum\nde AURA.', 'Melenas con movimiento, recogidos que cuentan historias y pequeños detalles hechos con cariño. Aquí puedes mirar de cerca nuestro trabajo.', crumb='Galería')
-     + f'<section class="section" id="descubrir"><div class="wrap"><div class="section-head reveal"><div>{kicker("Fotografías reales del salón")}<h2>Explora.<br><em>Encuentra tu inspiración.</em></h2></div><p>Pulsa una foto para verla de cerca y acceder a su publicación original.</p></div>{gallery(GALLERY)}<p class="gallery-disclaimer">Selección de fotografías publicadas por AURA en Instagram y en su ficha pública. El color puede variar según la luz y la pantalla.</p></div></section>'
+     + xp_sec('gal', [
+         _gtab('Color', 'balayage', 'Balayage con ondas suaves', 'Balayage, reflejos, rubios y cobres: los trabajos de color que el salón publica, con sus antes y después.', 'Cada cabello parte de un punto distinto: úsalo como inspiración, no como promesa de resultado.', 'Color'),
+         _gtab('Peinados', 'letrero-ondas', 'Ondas junto al letrero de AURA', 'Lisos con brillo, ondas, semirrecogidos y cortes con carácter.', 'Mira cómo se mueve el pelo, no solo cómo queda de frente.', 'Peinados'),
+         _gtab('Novias', 'novia-1', 'Novia con peinado y maquillaje', 'Recogidos con textura, torsiones y melenas sueltas para novias e invitadas.', 'Si te gusta alguno, guárdalo: lo llevamos a la prueba.', 'Novias'),
+         _gtab('Estética', 'real-12', 'Manicura en rosa vibrante', 'Manicuras, cuidado de manos y color para las uñas.', 'Esmaltes como OPI y Masglo vegano, entre otros.', 'Estética'),
+         _gtab('Salón', 'salon-estanteria', 'Estantería de producto profesional', 'El espacio, el equipo y los productos: madera, plantas y luz cálida.', 'Así es el sitio donde te esperamos.', 'Salón')],
+         'Elige por dónde empezar', 'Cinco formas<br><em>de mirar el álbum.</em>', 'Elige una categoría y salta directamente a sus fotos.', sid='descubrir')
+     + f'<section class="section pearl" id="album"><div class="wrap"><div class="section-head reveal"><div>{kicker("Fotografías reales del salón")}<h2>Explora.<br><em>Encuentra tu inspiración.</em></h2></div><p>Pulsa una foto para verla de cerca y acceder a su publicación original.</p></div>{gallery(GALLERY)}<p class="gallery-disclaimer">Selección de fotografías publicadas por AURA en Instagram y en su ficha pública. El color puede variar según la luz y la pantalla.</p></div></section>'
+     + pillars_sec([
+         ('Fotos reales', 'Trabajos del salón, no imágenes de catálogo.', 'camera'),
+         ('Con su origen', 'Cada foto enlaza a su publicación original.', 'check'),
+         ('Antes y después sin retoque', 'Son mitades de la misma composición publicada por el salón.', 'layers'),
+         ('Cada cabello es distinto', 'El resultado depende de tu cabello de partida.', 'strand')],
+         'Cómo leer estas fotos', 'Con los ojos<br><em>bien abiertos.</em>', 'Cuatro claves para que la inspiración sea útil.', cls='')
      + transform(list(PAIRS))
-     + f'<section class="section dark grain"><div class="wrap" style="text-align:center;max-width:820px">{kicker("Siempre hay algo nuevo")}<h2>La vida de AURA<br><em>sigue en nuestras redes.</em></h2><p style="margin-top:22px">Para ver los últimos trabajos, historias y novedades, visita nuestros perfiles.</p><div class="actions" style="justify-content:center">{ext(INSTAGRAM, "Ver Instagram", "btn")}{ext(FACEBOOK, "Ver Facebook", "btn btn--ghost")}</div></div></section>')
+     + steps_sec([
+         ('Guarda referencias', 'Elige dos o tres fotos que te gusten, de esta galería o tuyas.'),
+         ('Fíjate en el detalle', 'Largo, color, movimiento… no solo en la foto entera.'),
+         ('Compártelas con el equipo', 'Envíalas por WhatsApp al pedir cita.'),
+         ('Lo adaptamos a ti', 'Ajustamos la idea a tu cabello, tu rostro y tu rutina.')],
+         'De la foto a tu pelo', 'Cómo elegir<br><em>tu look.</em>', 'Un camino sencillo desde la inspiración hasta la silla.', cta=book('Pedir mi cita'), cls='pearl')
+     + ig_wall())
 
 
 # ───────────── cuidados ─────────────
@@ -398,14 +620,33 @@ page('cuidados', 'Cuidado en casa', 'Productos profesionales y una rutina capila
 # ───────────── contacto ─────────────
 page('contacto', 'Contacto y citas', 'Pide cita en AURA Organic Salón: 642 63 69 70. Av. Inmaculada Concepción 42, El Sauzal, Tenerife.',
      hero('contacto', 'El Sauzal, Tenerife', 'Hagamos\nun hueco.', 'Estamos al otro lado para escucharte, resolver tus dudas y encontrar un hueco para ti. Llámanos o prepara tu solicitud por WhatsApp.', crumb='Contacto')
-     + f'<section class="section" id="descubrir"><div class="wrap contact-grid"><div class="reveal">{kicker("Hablemos")}<h2>Una conversación<br><em>lo pone todo en marcha.</em></h2><a class="contact-phone" href="tel:{TEL}">642 63 69 70</a><p>Para pedir cita, consultar un servicio o preparar tu primera visita.</p><div class="actions">{book("Preparar mi solicitud")}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div><p style="margin-top:34px"><a class="link" href="mailto:auraesteticasauzal@gmail.com">auraesteticasauzal@gmail.com</a></p><div class="contact-social">{ext(INSTAGRAM, "Instagram")}{ext(FACEBOOK, "Facebook")}</div></div>'
-       f'<div class="visit-card reveal" style="--d:.15s"><h3>Ven a vernos</h3><address>Av. Inmaculada Concepción, 42<br>38360 El Sauzal<br>Santa Cruz de Tenerife</address><h4>Horario de verano publicado</h4><ul class="hours"><li><span>Lunes a viernes</span><b>9:00 – 17:30</b></li><li><span>Sábados</span><b>9:00 – 14:00</b></li></ul><p style="margin-top:14px">Horario publicado por el salón en Instagram para la temporada de verano. Confirma el horario actual y la disponibilidad con el equipo; atendemos con cita.</p><div class="actions">{ext(GOOGLE, "Preparar mi ruta", "btn")}</div></div></div></section>'
+     + f'<section class="section" id="descubrir"><div class="wrap contact-grid"><div class="reveal">{kicker("Hablemos")}<h2>Una conversación<br><em>lo pone todo en marcha.</em></h2><a class="contact-phone" href="tel:{TEL}">642 63 69 70</a><p>Para pedir cita, consultar un servicio o preparar tu primera visita.</p><div class="actions">{book("Preparar mi solicitud")}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div><p style="margin-top:34px"><a class="link" href="mailto:auraesteticasauzal@gmail.com">auraesteticasauzal@gmail.com</a></p>{social(labels=True, cls="contact-social")}</div>'
+       f'<div class="visit-card reveal" style="--d:.15s"><h3>Ven a vernos</h3><address>Av. Inmaculada Concepción, 42<br>38360 El Sauzal<br>Santa Cruz de Tenerife</address>{open_badge()}<p style="margin-top:18px">Consulta más abajo el horario semanal. Se recomienda pedir cita; confirma la disponibilidad con el equipo.</p><div class="actions">{ext(GOOGLE, "Preparar mi ruta", "btn")}</div></div></div></section>'
+     + f'<section class="section pearl"><div class="wrap"><div class="section-head reveal"><div>{kicker("Cuándo estamos")}<h2>Tu semana<br><em>en AURA.</em></h2></div><p>Mira de un vistazo si estamos abiertas ahora y cuándo abrimos.</p></div>{week_card()}</div></section>'
+     + pillars_sec([
+         ('Acceso adaptado', 'Entrada, aparcamiento, asientos y aseo adaptados para sillas de ruedas, y bucle magnético.', 'access'),
+         ('Aparcamiento gratuito', 'Aparcamiento en la calle y parking gratuitos.', 'parking'),
+         ('Wi‑Fi gratis', 'Para esperar con calma.', 'wifi'),
+         ('Aseos unisex', 'Disponibles para la clientela.', 'wc'),
+         ('Pago fácil', 'Tarjetas de crédito y débito, y pago con el móvil por NFC.', 'card'),
+         ('Cita flexible', 'Se recomienda pedir cita, pero atienden sin cita si hay hueco.', 'calendar'),
+         ('Apto para niños', 'Un salón adecuado para venir en familia.', 'smile'),
+         ('Espacio seguro', 'Amigable con la comunidad LGBTQ+ y espacio seguro para personas trans.', 'heart')],
+         'Todo pensado para ti', 'Para que venir<br><em>sea fácil.</em>', 'Información de la ficha del salón en Google.', cls='', dense=True,
+         note='Según la ficha de Google del salón (consulta del 20 de noviembre de 2026). Si tienes una necesidad concreta, cuéntanosla al reservar.')
      + f'<section class="section pearl"><div class="wrap"><div class="section-head reveal"><div>{kicker("Así nos reconocerás")}<h2>Busca el letrero<br><em>de AURA.</em></h2></div><p>El rótulo «Peluquería y Estética Unisex» y el logo de AURA te indican la entrada, en la avenida Inmaculada Concepción.</p></div><div class="facade"><div class="reveal-img">{img("fachada-clienta-2", "Clienta en la entrada del salón, con el rótulo Peluquería y Estética Unisex")}</div><div class="reveal-img" style="--d:.12s">{img("real-13", "Fachada de AURA Organic Salón")}</div><div class="reveal-img" style="--d:.24s">{img("aniversario-arco", "Arco de globos en la puerta de AURA")}</div></div></div></section>'
-     + f'<section class="section"><div class="wrap contact-grid"><div class="reveal">{kicker("Aquí estamos")}<h2>En el corazón<br><em>de El Sauzal.</em></h2><p style="margin-top:22px">Una visita para cuidarte en el norte de Tenerife. Consulta la ruta desde tu ubicación y organiza tu llegada con tiempo.</p><p>Si necesitas información sobre acceso, aparcamiento o alguna adaptación para tu visita, cuéntanoslo al reservar. Te ayudaremos a prepararla.</p></div><div class="map-card reveal" style="--d:.15s"><span class="pin">AURA</span><h3>Av. Inmaculada Concepción, 42</h3><p>38360 El Sauzal · Tenerife</p><div class="actions" style="margin-top:20px">{ext(GOOGLE, "Abrir en Google Maps", "btn")}</div></div></div></section>'
-     + f'<section class="section dark grain"><div class="wrap"><div class="section-head reveal"><div>{kicker("Tu primera visita")}<h2>Todo empieza<br><em>con una idea.</em></h2></div></div><div class="options">'
-     + ''.join(f'<article class="option reveal" style="--d:{i * .1}s;background:rgba(248,242,230,.05);color:var(--ivory)"><span class="nr">0{i + 1}</span><h3>{t}</h3><p style="color:rgba(248,242,230,.78)">{p}</p></article>' for i, (t, p) in enumerate([('Cuéntanos qué necesitas', 'Indica el servicio o la duda. Si se trata de color o keratina, menciona los trabajos anteriores que lleve tu cabello.'), ('Acordamos los detalles', 'El equipo confirma disponibilidad, duración orientativa y presupuesto. La solicitud web prepara el mensaje; no cierra una reserva por sí sola.'), ('Ven a tu momento', 'Trae tus referencias si las tienes. Si necesitas cambiar o cancelar tu cita, avisa al salón con la mayor antelación posible.')]))
-     + '</div></div></section>'
-     + faqs([('¿Se confirma la cita al rellenar el formulario?', 'No. El formulario prepara un mensaje que tú envías desde WhatsApp. La cita solo queda acordada cuando el equipo confirma día y hora.'), ('¿Puedo reservar por teléfono?', 'Sí. Llama al 642 63 69 70 para consultar disponibilidad y organizar tu visita.'), ('¿Hay aparcamiento y acceso adaptado?', 'La información aportada menciona aparcamiento cercano y acceso adaptado. Confirma con el salón las condiciones actuales y cualquier necesidad específica antes de desplazarte.'), ('¿Qué métodos de pago aceptáis?', 'El directorio del negocio indica pago con tarjeta. Para confirmar modalidades actuales u otras opciones, consulta al equipo al reservar.')]))
+     + f'<section class="section"><div class="wrap contact-grid"><div class="reveal">{kicker("Aquí estamos")}<h2>En el corazón<br><em>de El Sauzal.</em></h2><p style="margin-top:22px">Una visita para cuidarte en el norte de Tenerife. Consulta la ruta desde tu ubicación y organiza tu llegada con tiempo.</p></div><div class="map-card reveal" style="--d:.15s"><span class="pin">AURA</span><h3>Av. Inmaculada Concepción, 42</h3><p>38360 El Sauzal · Tenerife</p><div class="actions" style="margin-top:20px">{ext(GOOGLE, "Abrir en Google Maps", "btn")}</div></div></div></section>'
+     + steps_sec([
+         ('Cuéntanos qué necesitas', 'Indica el servicio o la duda. Si es color o keratina, menciona los trabajos anteriores de tu cabello.'),
+         ('Acordamos los detalles', 'El equipo confirma disponibilidad, duración orientativa y presupuesto. La solicitud web no cierra una reserva por sí sola.'),
+         ('Trae tus referencias', 'Fotos, ideas y, si es un evento, la fecha y los accesorios.'),
+         ('Ven a tu momento', 'Si necesitas cambiar o cancelar, avisa con la mayor antelación posible.')],
+         'Tu primera visita', 'Todo empieza<br><em>con una idea.</em>', 'Cuatro pasos, sin complicaciones.', cta=book('Preparar mi solicitud'))
+     + faqs([('¿Se confirma la cita al rellenar el formulario?', 'No. El formulario prepara un mensaje que tú envías desde WhatsApp. La cita solo queda acordada cuando el equipo confirma día y hora.'),
+             ('¿Puedo reservar por teléfono?', 'Sí. Llama al 642 63 69 70 para consultar disponibilidad y organizar tu visita.'),
+             ('¿Hay aparcamiento y acceso adaptado?', 'Según la ficha de Google del salón, hay aparcamiento gratuito (en la calle y parking) y el local cuenta con acceso, aparcamiento, asientos y aseo adaptados para sillas de ruedas. Confirma cualquier necesidad concreta al reservar.'),
+             ('¿Qué métodos de pago aceptáis?', 'Según la ficha de Google del salón: tarjetas de crédito y débito y pago con el móvil por NFC. Confirma al reservar si necesitas otra modalidad.'),
+             ('¿Puedo ir sin cita?', 'Se recomienda pedir cita, pero la ficha indica que también atienden sin cita previa si hay hueco. Para no esperar, escríbenos antes.')], dark=True))
 
 
 # ───────────── información y 404 ─────────────

@@ -61,3 +61,10 @@ Rediseño v2: Bricolage Grotesque, DM Sans y Caveat variables, procedentes del r
 - Datos nuevos: «Ya van 2 años de cumplir un sueño» (publicación de aniversario); Experience Day de Arkhē Cosmetics en el salón (29/09/2026); esmaltes veganos Masglo; productos OPI, Olaplex, Plástica y GHD visibles en las fotos; horario de verano publicado en Instagram (L–V 9:00–17:30, sáb. 9:00–14:00), mostrado como horario de temporada con aviso para confirmar.
 - Facebook (90 seguidores, sin reseñas) repite contenido de Instagram y confirma teléfono, WhatsApp, dirección y correo.
 - Los originales descargados están en `_research/` (excluido de git).
+
+
+## Ficha de Google (consulta 20/11/2026, vía Google Maps)
+- 4,8 sobre 5 con 32 reseñas. Se muestran 10 extractos literales (se recortan solo frases completas) con su autor; no se muestran estrellas por reseña porque Google no las ofrece en el texto leído.
+- Horario: lunes a viernes 9:00–18:30, sábado 9:00–14:00, domingo cerrado. Sustituye al «horario de verano» de Instagram (9:00–17:30) y alimenta el indicador «abierto ahora» (zona horaria Atlantic/Canary). Para cambiarlo: constante `HOURS` en `build.py`.
+- Instalaciones y servicios (información del negocio en Google): acceso, aparcamiento, asientos y aseo adaptados para sillas de ruedas; bucle magnético; Wi-Fi gratis; aseos unisex; aparcamiento gratuito (calle y parking); tarjetas de crédito y débito y pago móvil NFC; adecuado para niños; se recomienda cita pero acepta clientes sin cita; amigable con la comunidad LGBTQ+ y espacio seguro para personas trans; se identifica como de propietarias mujeres.
+- Con esto quedan resueltos los pendientes de horario, accesibilidad, aparcamiento, Wi-Fi y medios de pago. Siguen pendientes los datos fiscales del titular.
