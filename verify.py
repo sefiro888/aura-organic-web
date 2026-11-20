@@ -32,8 +32,8 @@ for name,p in files.items():
   target=u.path or name
   if target.endswith('.html') and target not in files:errors.append(f'{name}: missing page {target}')
   if u.fragment and target in files and unquote(u.fragment) not in files[target].ids:errors.append(f'{name}: missing anchor {href}')
-for url in re.findall(r'url\([\'"]?([^\)\'\"]+)',(ROOT/'assets/site.css').read_text(encoding='utf8')):
- if not url.startswith('data:') and not (ROOT/'assets'/url).is_file():errors.append(f'Missing CSS asset {url}')
+for url in re.findall(r'url\([\'"]?([^\)\'\"]+)',(ROOT/'assets/direction.css').read_text(encoding='utf8')):
+ if not url.startswith(('data:','%23','#')) and not (ROOT/'assets'/url).is_file():errors.append(f'Missing CSS asset {url}')
 result={'pages':len(files),'internal_and_external_links':links,'image_references':images,'errors':errors}
 print(json.dumps(result,ensure_ascii=False,indent=2))
 if errors:raise SystemExit(1)

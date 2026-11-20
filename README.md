@@ -7,12 +7,26 @@ Para servirla en local: `python -m http.server 5180 --bind 127.0.0.1 --directory
 ## Edición
 - Textos de servicios y selección de galería: `content.py`.
 - Composición de las páginas: `build.py`; regenerar con `python build.py`.
-- Diseño: `dist/assets/site.css`.
-- Interacciones: `dist/assets/site.js`.
+- Diseño: `dist/assets/direction.css`.
+- Interacciones: `dist/assets/site.js` y `dist/assets/art.js`.
+- Composición de portada y ornamentos: `art_direction.py`.
 - Comprobación de archivos, enlaces y anclas: `python verify.py`.
 
 ## Páginas
 Inicio, servicios, peluquería, coloración, rubios, keratina, estética, novias, salón, galería, cuidados en casa, contacto, información y 404.
+
+## Rediseño visual v2
+
+La primera propuesta fue rechazada por el usuario por resultar demasiado genérica. Esta versión sustituye completamente su dirección visual, sin acumular correcciones sobre la hoja de estilos anterior.
+
+- Bricolage Grotesque, DM Sans y Caveat variables y locales; sustituyen Cormorant y Manrope.
+- Portada escénica, madera oscura, fotografía real a gran escala, firma manuscrita, verde bosque, latón y verde luminoso.
+- Explorador de servicios con paneles fotográficos y navegación de teclado.
+- Ornamentos botánicos dibujados en SVG, flor geométrica, sello de pétalos animado y textura de grano.
+- Novias como composición de fotografías impresas; equipo sobre madera, álbum asimétrico y nuevas cabeceras en todos los HTML.
+- Botones metálicos con barrido de luz, movimiento suave al cursor y onda de pulsación. Fotos con iluminación al cursor, desplazamiento leve y entradas al aparecer.
+- Capas decorativas fuera del texto, efectos desactivados con reducción de movimiento y adaptados a pantallas táctiles.
+- La ilustración de depilación con hilo se identifica como tal y reemplaza la fotografía de manos que no correspondía al texto.
 
 ## Diseño e interacciones
 Verde profundo, marfil, latón y nogal a partir de la identidad aportada. Fotografías reales del negocio. Cabeceras editoriales con foto propia en cada página, madera y vegetación, cinta en movimiento, entradas suaves al aparecer, menú de servicios con miniaturas, menú móvil, barra de contacto móvil, recomendaciones por objetivo, comparador, galería filtrable y visor con navegación de teclado, reseñas navegables y preguntas desplegables.

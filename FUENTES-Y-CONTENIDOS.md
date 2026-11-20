@@ -38,7 +38,7 @@ Material recuperado de la página de Instagram guardada por el navegador:
 `logo`, `ambiente` y `botanical-wood` proceden de las tres imágenes aportadas por el usuario. `ambiente` es una imagen de identidad proporcionada para el proyecto; se distingue de la documentación fotográfica real del espacio. No se han inventado imágenes de tratamientos ni utilizado fotos de otros salones.
 
 ## Tipografías
-Cormorant Garamond y Manrope descargadas de Google Fonts, alojadas localmente. Familia con licencia SIL Open Font License; conservar sus licencias en `dist/assets`.
+Rediseño v2: Bricolage Grotesque, DM Sans y Caveat variables, procedentes del repositorio oficial google/fonts, alojadas localmente. Sus licencias SIL Open Font License se conservan en `dist/assets`. Las anteriores Cormorant Garamond y Manrope han sido sustituidas.
 
 ## Datos que requieren confirmación
 - Horario completo: discrepancia entre fuentes (18:30/20:30 y sábado 14:00/14:30). La web invita a confirmar la visita y no muestra un indicador inventado de «abierto ahora».
@@ -50,3 +50,7 @@ Cormorant Garamond y Manrope descargadas de Google Fonts, alojadas localmente. F
 
 ## Demos locales consultadas
 `Lapeludetodos` y `Peluts codex`: se revisaron sus documentos y ejemplos de interacción. Se recuperan conceptos útiles —menú fotográfico, contacto móvil, filtros, solicitud revisable y comparación— con contenido y composición propios de AURA. No se copiaron marcas, teléfonos, fotografías ni textos comerciales de otros negocios.
+
+
+## Decoración y concordancia v2
+`botanical.svg`, `flower.svg` y el sello de pétalos son ornamentos vectoriales creados para esta versión. `hilo.svg` es una ilustración de una técnica facial; no representa una fotografía ni una prestación demostrada en una clienta. Se revisó la correspondencia entre fotografías y bloques de contenido: equipo para atención, color aplicado para coloración, manos para manicura, recogidos para novias y productos para mantenimiento.
