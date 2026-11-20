@@ -242,7 +242,7 @@ def page(slug, title, desc, body):
             f'<title>{e(title)} · AURA Organic Salón · El Sauzal</title><meta name="description" content="{e(desc)}"><meta property="og:title" content="{e(title)} · AURA"><meta property="og:description" content="{e(desc)}"><meta property="og:type" content="website">'
             f'<meta property="og:image" content="{ORIGIN}/assets/img/ambiente-logo.webp"><meta property="og:locale" content="es_ES"><link rel="icon" type="image/png" href="assets/img/favicon.png">'
             f'<script>document.documentElement.classList.add("js");try{{if(sessionStorage.getItem("auraSeen"))document.documentElement.classList.add("seen")}}catch(e){{}}</script><link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/dmsans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/cormorant-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>'
-            f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script></head><body data-page="{slug}"><div id="loader" aria-hidden="true"><div class="ring"><img src="assets/img/logo.webp" alt="" width="96" height="96"></div><span>AURA</span></div>{header(slug)}<main id="contenido">{body}</main>{footer()}</body></html>')
+            f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script></head><body data-page="{slug}"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="lotA" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f3d3c8"/><stop offset="1" stop-color="#fdf1ec"/></linearGradient><linearGradient id="lotB" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#eba897"/><stop offset="1" stop-color="#f9d9cf"/></linearGradient><linearGradient id="lotC" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#df8f7c"/><stop offset=".55" stop-color="#eeb0a0"/><stop offset="1" stop-color="#f8d3c8"/></linearGradient><radialGradient id="lotPod" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f6e2a8"/><stop offset="1" stop-color="#b8934b"/></radialGradient><linearGradient id="leafG" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#14613a"/><stop offset=".6" stop-color="#2f9158"/><stop offset="1" stop-color="#63c78a"/></linearGradient><linearGradient id="calG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f9158"/><stop offset="1" stop-color="#14613a"/></linearGradient></defs></svg><div id="loader" aria-hidden="true"><div class="ring"><img src="assets/img/logo.webp" alt="" width="96" height="96"></div><span>AURA</span></div>{header(slug)}<main id="contenido">{body}</main>{footer()}</body></html>')
     (OUT / f'{slug}.html').write_text(html, encoding='utf8')
 
 
@@ -393,10 +393,31 @@ STEP_IMGS = {
 }
 
 
-PETALS = ''.join(
-    f'<path class="petal" style="--a:{a}deg;--k:{k}" d="M50 50C36 38 38 14 50 6c12 8 14 32 0 44Z"/>'
-    for k, a in enumerate((-75, -50, -25, 0, 25, 50, 75)))
-LEAF = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M1 29C4 12 20 1 43 2 41 20 24 30 1 29Z"/><path class="rib" d="M1 29C14 21 26 13 38 5"/></svg>'
+_PETAL = 'M60 64C43 56 38 30 60 6c22 24 17 50 0 58Z'
+
+
+def _petals():
+    tiers = [('pa', (-78, -54, 54, 78), 1.0), ('pb', (-32, 0, 32), .96), ('pc', (-14, 14), .8), ('pc', (0,), .66)]
+    out, k = '', 0
+    for cls, angles, s in tiers:
+        for a in angles:
+            out += f'<g class="petal {cls}" style="--a:{a}deg;--s:{s};--k:{k}"><path d="{_PETAL}"/><path class="vein" d="M60 60V24"/></g>'
+            k += 1
+    return out
+
+
+def _stamens():
+    out = ''
+    for a in (-44, -26, -9, 9, 26, 44):
+        out += f'<g class="sa" style="--a:{a}deg"><path d="M60 60V45"/><circle cx="60" cy="43.5" r="1.7"/></g>'
+    return out
+
+
+LOTUS = ('<svg viewBox="0 0 120 120" aria-hidden="true"><path class="calyx" d="M60 66C46 66 36 72 30 83 44 83 56 77 60 66Z"/><path class="calyx" d="M60 66C74 66 84 72 90 83 76 83 64 77 60 66Z"/>'
+         + _petals() + '<g class="stam">' + _stamens() + '<circle class="pod" cx="60" cy="60" r="5.5"/></g></svg>')
+
+LEAF = ('<svg viewBox="0 0 60 40" aria-hidden="true"><path class="blade" d="M2 38C6 16 28 2 58 3 56 24 34 40 2 38Z"/>'
+        '<path class="vn" d="M2 38C20 28 38 16 56 5"/><path class="vn s" d="M15 31 17 21M25 26 29 16M35 20 41 12"/></svg>')
 
 
 def step_cards(items, icons, photos=None):
@@ -408,7 +429,7 @@ def step_cards(items, icons, photos=None):
                 f'<div class="vstem" aria-hidden="true"><svg class="stem track" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0C8 30 92 70 50 100"/></svg>'
                 f'<svg class="stem grow" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0C8 30 92 70 50 100"/></svg>'
                 f'<span class="leaf la" style="--k:0">{LEAF}</span><span class="leaf lb" style="--k:1">{LEAF}</span>'
-                f'<div class="bloom"><svg viewBox="0 0 100 100">{PETALS}</svg><span class="core">{ico(t, k)}</span></div></div></div>')
+                f'<div class="bloom">{LOTUS}</div></div></div>')
     return out
 
 
