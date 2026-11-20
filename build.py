@@ -393,15 +393,22 @@ STEP_IMGS = {
 }
 
 
-def step_cards(items, icons, photos):
+PETALS = ''.join(
+    f'<path class="petal" style="--a:{a}deg;--k:{k}" d="M50 50C36 38 38 14 50 6c12 8 14 32 0 44Z"/>'
+    for k, a in enumerate((-75, -50, -25, 0, 25, 50, 75)))
+LEAF = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M1 29C4 12 20 1 43 2 41 20 24 30 1 29Z"/><path class="rib" d="M1 29C14 21 26 13 38 5"/></svg>'
+
+
+def step_cards(items, icons, photos=None):
     out = ''
     for i, (t, p) in enumerate(items):
         k = icons[i] if i < len(icons) else 'sparkle'
-        ph = photos[i] if i < len(photos) else photos[0]
-        act = ' is-active' if i == 0 else ''
-        out += (f'<article class="jp{act}" tabindex="0" aria-expanded="{"true" if i == 0 else "false"}" style="--i:{i}">{img(ph, "")}<span class="jp-shade"></span>'
-                f'<span class="jp-no" aria-hidden="true">0{i + 1}</span><span class="jp-vt" aria-hidden="true">{t}</span>'
-                f'<div class="jp-body"><span class="jp-ico" aria-hidden="true">{ico(t, k)}</span><h3>{t}</h3><p>{p}</p></div><i class="jp-bar" aria-hidden="true"></i></article>')
+        side = 'l' if i % 2 == 0 else 'r'
+        out += (f'<div class="vrow {side}" style="--i:{i}"><article class="vcard"><span class="vno" aria-hidden="true">0{i + 1}</span><h3>{t}</h3><p>{p}</p></article>'
+                f'<div class="vstem" aria-hidden="true"><svg class="stem track" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0C8 30 92 70 50 100"/></svg>'
+                f'<svg class="stem grow" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0C8 30 92 70 50 100"/></svg>'
+                f'<span class="leaf la" style="--k:0">{LEAF}</span><span class="leaf lb" style="--k:1">{LEAF}</span>'
+                f'<div class="bloom"><svg viewBox="0 0 100 100">{PETALS}</svg><span class="core">{ico(t, k)}</span></div></div></div>')
     return out
 
 
@@ -409,7 +416,7 @@ def steps_sec(items, kick, h2, intro='', cta=None, cls='', sid='', icons=None, p
     st = step_cards(items, icons or STEP_ICONS['inicio'], photos or STEP_IMGS['inicio'])
     act = f'<div class="actions" style="justify-content:center">{cta}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div>' if cta else ''
     c = f' {cls}' if cls else ''
-    return (f'<section class="section{c}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div><div class="journey reveal" data-journey>{st}</div>{act}</div></section>')
+    return (f'<section class="section{c}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div><div class="vine" data-vine>{st}</div>{act}</div></section>')
 
 
 def xp_sec(key, tabs, kick, h2, intro='', cls='dark grain', sid=''):
@@ -592,7 +599,7 @@ for slug, d in SERVICES.items():
     panels = ''.join(f'<article class="xp-panel{" is-active" if i == 0 else ""}" role="tabpanel" id="pn-{slug}-{i}" aria-labelledby="tab-{slug}-{i}"><figure class="arch">{img(x["tabs"][i], d["title"] + ": fotografía real de AURA")}</figure><div><h3>{t}</h3><p>{p1}</p><p>{p2}</p></div></article>' for i, (t, p1, p2) in enumerate(d['sections']))
     explorer = (f'<section class="section dark grain" id="descubrir"><div class="wrap"><div class="section-head reveal"><div>{kicker("Qué incluye")}<h2>El cuidado,<br><em>paso a paso.</em></h2></div><p>Elige un apartado o déjate llevar: cambia solo.</p></div>'
                 f'<div class="xp reveal"><div class="xp-tabs" role="tablist" aria-label="Apartados de {d["short"]}">{tabs}</div><div class="xp-panels">{panels}</div></div></div></section>')
-    steps = (f'<section class="section" id="cita"><div class="wrap"><div class="section-head reveal"><div>{kicker("Tu cita")}<h2>Así será<br><em>tu visita.</em></h2></div><p>Sin sorpresas: sabrás qué ocurre en cada momento.</p></div><div class="journey reveal" data-journey>'
+    steps = (f'<section class="section" id="cita"><div class="wrap"><div class="section-head reveal"><div>{kicker("Tu cita")}<h2>Así será<br><em>tu visita.</em></h2></div><p>Sin sorpresas: sabrás qué ocurre en cada momento.</p></div><div class="vine" data-vine>'
              + step_cards(x['steps'], STEP_ICONS[slug], STEP_IMGS[slug]) + '</div>'
              f'<div class="actions" style="justify-content:center">{book("Pedir mi cita", d["title"])}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div></div></section>')
     opts = ''.join(f'<article class="option reveal" style="--d:{i * .1}s"><span class="nr">0{i + 1}</span><h3>{t}</h3><p>{p}</p><div class="row">{link(s, "Conocer más")}{book("Consultar mi caso", d["title"], "link")}</div></article>' for i, (t, p, s) in enumerate(d['options']))
