@@ -836,3 +836,44 @@ html,body{overflow-x:clip}
 .steps .step::after{right:0;bottom:0;width:150px;height:150px;border-radius:0 0 28px 0;background:radial-gradient(circle at 100% 100%,rgba(184,147,75,.28),transparent 70%);transition:width .8s var(--ease),height .8s var(--ease)}
 .steps .step:hover::after{transform:none;width:280px;height:280px}
 @media (max-width:700px){.steps .step::after{border-radius:0 0 24px 0}}
+
+/* ───── v3.6 · «Así será tu visita»: paneles que se abren como un abanico ───── */
+.journey{display:flex;gap:14px;height:clamp(470px,50vw,600px)}
+.jp{position:relative;isolation:isolate;flex:1 1 0;min-width:0;border-radius:160px 160px 30px 30px;overflow:hidden;cursor:pointer;color:var(--ivory);background:var(--w800);box-shadow:0 30px 50px -30px rgba(34,19,10,.6);transition:flex-grow .95s var(--ease),border-radius .95s var(--ease)}
+.jp.is-active{flex-grow:3.8;border-radius:30px;cursor:default}
+.jp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;transform:scale(1.14);transition:transform 7s linear}
+.jp.is-active img{transform:scale(1.02)}
+.jp::after{content:"";position:absolute;inset:0;z-index:-2;background:rgba(21,11,5,.5);transition:opacity .9s ease}
+.jp.is-active::after{opacity:0}
+.jp:hover::after{opacity:.2}.jp.is-active:hover::after{opacity:0}
+.jp-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(21,11,5,.94) 0,rgba(21,11,5,.55) 38%,rgba(21,11,5,.1) 72%,rgba(21,11,5,.35) 100%)}
+.jp-no{position:absolute;top:24px;left:50%;translate:-50% 0;font:italic 400 2.5rem/1 var(--serif);color:var(--brassl);transition:left .9s var(--ease),translate .9s var(--ease),font-size .9s var(--ease),color .6s}
+.jp.is-active .jp-no{left:32px;translate:0 0;font-size:5rem;color:transparent;-webkit-text-stroke:1px var(--brassl)}
+.jp-vt{position:absolute;left:50%;bottom:34px;translate:-50% 0;writing-mode:vertical-rl;transform:rotate(180deg);font:500 1.75rem/1 var(--serif);white-space:nowrap;opacity:1;transition:opacity .5s .25s}
+.jp.is-active .jp-vt{opacity:0;transition-delay:0s}
+.jp-body{position:absolute;left:32px;right:32px;bottom:34px;opacity:0;transform:translateY(26px);pointer-events:none;transition:opacity .5s ease,transform .6s var(--ease)}
+.jp.is-active .jp-body{opacity:1;transform:none;transition:opacity .8s ease .45s,transform .9s var(--ease) .45s}
+.jp-ico{display:grid;place-items:center;width:62px;height:62px;border-radius:50%;margin-bottom:20px;color:var(--brassl);background:rgba(21,11,5,.55);box-shadow:inset 0 0 0 1px rgba(230,205,143,.6)}
+.jp-ico svg{width:30px;height:30px;overflow:visible}
+.jp.is-active .jp-ico svg *{stroke-dasharray:1;animation:draw 1.3s var(--ease) .6s backwards}
+.jp-body h3{font-size:clamp(1.9rem,2.8vw,2.8rem);margin-bottom:10px}
+.jp-body p{max-width:36ch;color:rgba(248,242,230,.92);font-size:1.02rem}
+.jp-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(230,205,143,.22);overflow:hidden}
+.jp-bar::after{content:"";display:block;height:100%;background:var(--brassl);transform:scaleX(0);transform-origin:left}
+.jp.is-active .jp-bar::after{animation:fill var(--dur,6.5s) linear forwards}
+.journey.paused .jp-bar::after{animation-play-state:paused}
+.jp:focus-visible{outline:2px solid var(--brassl);outline-offset:3px}
+@media (max-width:1100px){.journey{height:clamp(440px,60vw,560px)}.jp.is-active{flex-grow:4.6}}
+@media (max-width:760px){
+ .journey{flex-direction:column;height:auto;gap:10px}
+ .jp{flex:none;height:86px;border-radius:26px;transition:height .7s var(--ease)}
+ .jp.is-active{height:372px;border-radius:26px}
+ .jp img{transform:none;transition:none}.jp.is-active img{transform:none}
+ .jp-no{top:50%;left:20px;translate:0 -50%;font-size:1.8rem;transition:none}
+ .jp.is-active .jp-no{top:20px;translate:0 0;font-size:3.4rem;left:22px}
+ .jp-vt{writing-mode:horizontal-tb;transform:none;left:70px;bottom:auto;top:50%;translate:0 -50%;font-size:1.5rem}
+ .jp-body{left:22px;right:22px;bottom:24px}
+ .jp-bar{display:none}
+ .jp-body h3{font-size:1.8rem}
+}
+@media (prefers-reduced-motion:reduce){.jp,.jp img,.jp-body,.jp-no{transition-duration:.01ms!important}.jp.is-active .jp-bar::after{animation:none;transform:scaleX(1)}}
