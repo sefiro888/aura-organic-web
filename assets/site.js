@@ -189,4 +189,16 @@
   ['mouseleave','focusout'].forEach(e=>j.addEventListener(e,()=>{j.classList.remove('paused');loop();}));
   if('IntersectionObserver' in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis){loop();}else clearTimeout(timer);},{threshold:.4}).observe(j);
  });
+
+ /* enredadera: el tallo crece con el scroll y las flores se abren */
+ $$('[data-vine]').forEach(v=>{
+  const rows=$$('.vrow',v);
+  if(reduced||!('IntersectionObserver' in window)){rows.forEach(r=>{r.style.setProperty('--p',1);r.classList.add('on');});return;}
+  let active=false,pend=false;
+  const upd=()=>{pend=false;const vh=innerHeight;rows.forEach(r=>{const b=r.getBoundingClientRect();const p=Math.max(0,Math.min(1,(vh*.86-b.top)/(b.height*1.05)));r.style.setProperty('--p',p.toFixed(3));if(p>.45)r.classList.add('on');});};
+  const sched=()=>{if(active&&!pend){pend=true;requestAnimationFrame(upd);}};
+  addEventListener('scroll',sched,{passive:true});addEventListener('resize',sched);
+  new IntersectionObserver(es=>{active=es[0].isIntersecting;if(active)upd();},{rootMargin:'200px 0px'}).observe(v);
+  upd();
+ });
 })();
