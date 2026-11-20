@@ -2,3 +2,4 @@ __pycache__/
 qa/
 *.tar.gz
 *.zip
+_research/

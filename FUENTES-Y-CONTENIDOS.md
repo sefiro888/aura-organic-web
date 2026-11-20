@@ -54,3 +54,10 @@ Rediseño v2: Bricolage Grotesque, DM Sans y Caveat variables, procedentes del r
 
 ## Decoración y concordancia v2
 `botanical.svg`, `flower.svg` y el sello de pétalos son ornamentos vectoriales creados para esta versión. `hilo.svg` es una ilustración de una técnica facial; no representa una fotografía ni una prestación demostrada en una clienta. Se revisó la correspondencia entre fotografías y bloques de contenido: equipo para atención, color aplicado para coloración, manos para manicura, recogidos para novias y productos para mantenimiento.
+
+
+## Ampliación 20/11/2026 (v3)
+- Instagram `@aurasalonsauzal` (252 publicaciones, 277 seguidores): revisadas las 132 primeras de la cuadrícula en la sesión del usuario. Se han seleccionado unas 60 fotos propias del salón (letrero, listones de madera, expositores Arkhē, producto Olaplex/OPI/Plástica, equipo, aniversario, recogidos, novias y trabajos de color) y 12 composiciones antes/después, separadas en dos mitades sin retoque. No se han usado capturas de TikTok, viajes personales ni imágenes de terceros.
+- Datos nuevos: «Ya van 2 años de cumplir un sueño» (publicación de aniversario); Experience Day de Arkhē Cosmetics en el salón (29/09/2026); esmaltes veganos Masglo; productos OPI, Olaplex, Plástica y GHD visibles en las fotos; horario de verano publicado en Instagram (L–V 9:00–17:30, sáb. 9:00–14:00), mostrado como horario de temporada con aviso para confirmar.
+- Facebook (90 seguidores, sin reseñas) repite contenido de Instagram y confirma teléfono, WhatsApp, dirección y correo.
+- Los originales descargados están en `_research/` (excluido de git).

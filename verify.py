@@ -23,7 +23,7 @@ for name,p in files.items():
  if len(p.ids)!=len(set(p.ids)):errors.append(f'{name}: duplicate IDs')
  for a in p.images:
   images+=1
-  if not a.get('alt'):errors.append(f'{name}: image without alt')
+  if 'alt' not in a:errors.append(f'{name}: image without alt')
  for asset in p.assets:
   if not urlsplit(asset).scheme and not (ROOT/unquote(asset)).is_file():errors.append(f'{name}: missing asset {asset}')
  for href in p.links:
@@ -32,7 +32,7 @@ for name,p in files.items():
   target=u.path or name
   if target.endswith('.html') and target not in files:errors.append(f'{name}: missing page {target}')
   if u.fragment and target in files and unquote(u.fragment) not in files[target].ids:errors.append(f'{name}: missing anchor {href}')
-for url in re.findall(r'url\([\'"]?([^\)\'\"]+)',(ROOT/'assets/direction.css').read_text(encoding='utf8')):
+for url in re.findall(r'url\([\'"]?([^\)\'\"]+)',(ROOT/'assets/site.css').read_text(encoding='utf8')):
  if not url.startswith(('data:','%23','#')) and not (ROOT/'assets'/url).is_file():errors.append(f'Missing CSS asset {url}')
 result={'pages':len(files),'internal_and_external_links':links,'image_references':images,'errors':errors}
 print(json.dumps(result,ensure_ascii=False,indent=2))

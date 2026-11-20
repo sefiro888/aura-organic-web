@@ -1,37 +1,19 @@
 # AURA Organic Salón
 
-Web estática con 14 HTML, estilos y JavaScript compartidos, imágenes y tipografías locales. No requiere instalación para abrir `dist/index.html`.
-
-Para servirla en local: `python -m http.server 5180 --bind 127.0.0.1 --directory dist` desde esta carpeta.
+Web estática de 14 HTML, generada con Python. Para ver en local: `python -m http.server 5180 --bind 127.0.0.1 --directory dist` y abrir http://127.0.0.1:5180.
 
 ## Edición
-- Textos de servicios y selección de galería: `content.py`.
-- Composición de las páginas: `build.py`; regenerar con `python build.py`.
-- Diseño: `dist/assets/direction.css`.
-- Interacciones: `dist/assets/site.js` y `dist/assets/art.js`.
-- Composición de portada y ornamentos: `art_direction.py`.
+- Composición de páginas y piezas: `build.py` (regenerar con `python build.py`).
+- Textos de servicios: `content.py`.
+- Diseño: `dist/assets/site.css`. Interacciones: `dist/assets/site.js`.
 - Comprobación de archivos, enlaces y anclas: `python verify.py`.
 
-## Páginas
-Inicio, servicios, peluquería, coloración, rubios, keratina, estética, novias, salón, galería, cuidados en casa, contacto, información y 404.
+## Rediseño v3 (premium, orgánico, cálido)
+- **Paleta sacada del logo y de la foto del ambiente**: nogal (listones), marfil, esmeralda (verde del logo), latón (aro dorado), rosa eucalipto y un toque ámbar de las flores.
+- **Tipografía**: Cormorant Garamond (serif de alto contraste, a juego con el logotipo) y DM Sans. Locales, en woff2.
+- **Cabeceras completas en todas las páginas**: la foto del ambiente a pantalla completa con velo, luces cálidas que parpadean, pétalos que caen, texto legible encima y arcos con fotos reales. El resto del contenido va debajo.
+- **Elementos de otras demos**: comparador antes/después con selector de casos y cabecera de página de servicio con índice fijo y migas (La Pelu de Tod@s), contadores, cinta en movimiento, recomendador «hoy me apetece…», reseñas navegables, mosaico del espacio, muro de Instagram y cita preparada por WhatsApp (sin enviar nada).
+- Arcos como motivo (eco del aro del logo y de los listones), mosaico del salón, números de sección, revelado al hacer scroll, botones magnéticos y paralaje del cursor. Todo se desactiva con «reducir movimiento».
 
-## Rediseño visual v2
-
-La primera propuesta fue rechazada por el usuario por resultar demasiado genérica. Esta versión sustituye completamente su dirección visual, sin acumular correcciones sobre la hoja de estilos anterior.
-
-- Bricolage Grotesque, DM Sans y Caveat variables y locales; sustituyen Cormorant y Manrope.
-- Portada escénica, madera oscura, fotografía real a gran escala, firma manuscrita, verde bosque, latón y verde luminoso.
-- Explorador de servicios con paneles fotográficos y navegación de teclado.
-- Ornamentos botánicos dibujados en SVG, flor geométrica, sello de pétalos animado y textura de grano.
-- Novias como composición de fotografías impresas; equipo sobre madera, álbum asimétrico y nuevas cabeceras en todos los HTML.
-- Botones metálicos con barrido de luz, movimiento suave al cursor y onda de pulsación. Fotos con iluminación al cursor, desplazamiento leve y entradas al aparecer.
-- Capas decorativas fuera del texto, efectos desactivados con reducción de movimiento y adaptados a pantallas táctiles.
-- La ilustración de depilación con hilo se identifica como tal y reemplaza la fotografía de manos que no correspondía al texto.
-
-## Diseño e interacciones
-Verde profundo, marfil, latón y nogal a partir de la identidad aportada. Fotografías reales del negocio. Cabeceras editoriales con foto propia en cada página, madera y vegetación, cinta en movimiento, entradas suaves al aparecer, menú de servicios con miniaturas, menú móvil, barra de contacto móvil, recomendaciones por objetivo, comparador, galería filtrable y visor con navegación de teclado, reseñas navegables y preguntas desplegables.
-
-La solicitud prepara un mensaje de WhatsApp revisable, sin enviar nada automáticamente ni almacenar datos. El salón confirma disponibilidad y presupuesto. Se respeta la preferencia de reducir movimiento. No hay analítica, publicidad ni recursos de redes sociales incrustados.
-
-## Estado de contenidos
-Revisar `FUENTES-Y-CONTENIDOS.md`. Los horarios completos y datos legales del titular están pendientes de validación del negocio. La propuesta permanece sin indexación (`robots.txt`) y se entrega en acceso privado para revisión. No se ha modificado ningún perfil social del salón.
+## Fotografías
+Procedentes de las publicaciones públicas del Instagram del salón (132 revisadas), la ficha de Páginas Amarillas y las tres imágenes de identidad aportadas. Ver `FUENTES-Y-CONTENIDOS.md`.
