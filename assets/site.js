@@ -170,4 +170,23 @@
   back.addEventListener('click',()=>{if(step>=Q.length){step=Q.length-1;ans.length=step;}else{step=Math.max(0,step-1);ans.length=step;}ask();});
   ask();
  }
+
+ /* pasos de la visita: paneles en abanico */
+ $$('[data-journey]').forEach(j=>{
+  const ps=$$('.jp',j),dur=6500;let cur=0,timer,vis=false;
+  j.style.setProperty('--dur',dur+'ms');
+  const show=i=>{cur=(i+ps.length)%ps.length;ps.forEach((p,k)=>{p.classList.toggle('is-active',k===cur);p.setAttribute('aria-expanded',String(k===cur));});};
+  const loop=()=>{clearTimeout(timer);if(reduced||lite||!vis||j.classList.contains('paused'))return;timer=setTimeout(()=>{show(cur+1);loop();},dur);};
+  ps.forEach((p,k)=>{
+   p.addEventListener('click',()=>{if(k!==cur){show(k);loop();}});
+   if(fine)p.addEventListener('mouseenter',()=>{if(k!==cur)show(k);});
+   p.addEventListener('keydown',ev=>{
+    if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();show(k);}
+    else if(ev.key==='ArrowRight'||ev.key==='ArrowDown'){ev.preventDefault();show(cur+1);ps[cur].focus();}
+    else if(ev.key==='ArrowLeft'||ev.key==='ArrowUp'){ev.preventDefault();show(cur-1);ps[cur].focus();}});
+  });
+  ['mouseenter','focusin'].forEach(e=>j.addEventListener(e,()=>{j.classList.add('paused');clearTimeout(timer);}));
+  ['mouseleave','focusout'].forEach(e=>j.addEventListener(e,()=>{j.classList.remove('paused');loop();}));
+  if('IntersectionObserver' in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis){loop();}else clearTimeout(timer);},{threshold:.4}).observe(j);
+ });
 })();
