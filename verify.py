@@ -25,7 +25,7 @@ for name,p in files.items():
   images+=1
   if 'alt' not in a:errors.append(f'{name}: image without alt')
  for asset in p.assets:
-  if not urlsplit(asset).scheme and not (ROOT/unquote(asset)).is_file():errors.append(f'{name}: missing asset {asset}')
+  if not urlsplit(asset).scheme and not (ROOT/unquote(urlsplit(asset).path)).is_file():errors.append(f'{name}: missing asset {asset}')
  for href in p.links:
   links+=1;u=urlsplit(href)
   if u.scheme or u.netloc:continue

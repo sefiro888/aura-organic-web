@@ -2,6 +2,7 @@
 from pathlib import Path
 from html import escape as e
 import json
+import hashlib
 from urllib.parse import quote as urlquote
 import re
 from content import SERVICES, PA, GOOGLE, INSTAGRAM, FACEBOOK
@@ -256,6 +257,26 @@ def footer():
             f'<dialog id="lightbox" class="lightbox" aria-label="Fotografía ampliada"><button class="dialog-close" data-close aria-label="Cerrar fotografía">×</button><button class="lightbox-prev" aria-label="Foto anterior">‹</button><figure><img src="assets/img/equipo.webp" alt=""><figcaption><span id="lightbox-caption"></span><a id="lightbox-source" target="_blank" rel="noopener">Ver publicación original</a></figcaption></figure><button class="lightbox-next" aria-label="Foto siguiente">›</button></dialog>')
 
 
+def _asset_version():
+    h = hashlib.md5()
+    for n in ('site.css', 'site.js'):
+        h.update((OUT / 'assets' / n).read_bytes())
+    return h.hexdigest()[:10]
+
+
+def _critical_menu_css():
+    css = (OUT / 'assets' / 'site.css').read_text(encoding='utf8')
+    i = css.find('/* ───── v3.10')
+    if i < 0:
+        return ''
+    j = css.find('/* ─────', i + 10)
+    return css[i:] if j < 0 else css[i:j]
+
+
+ASSET_V = _asset_version()
+CRIT_MENU = _critical_menu_css()
+
+
 SHARE_IMG = ORIGIN + '/assets/img/og-share.jpg'
 SHARE_ALT = 'Logotipo de AURA Organic Salón sobre madera de nogal y flores'
 SHARE_HOME = {'t': 'AURA Organic Salón · Peluquería y estética en El Sauzal',
@@ -290,7 +311,7 @@ def page(slug, title, desc, body):
     html = (f'<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#150b05">'
             f'<title>{e(title)} · AURA Organic Salón · El Sauzal</title><meta name="description" content="{e(desc)}">{share_meta(slug, title, desc)}'
             f'<link rel="icon" type="image/png" href="assets/img/favicon.png">'
-            f'<script>document.documentElement.classList.add("js");try{{if(sessionStorage.getItem("auraSeen"))document.documentElement.classList.add("seen")}}catch(e){{}}</script><link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/dmsans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/cormorant-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>'
+            f'<script>document.documentElement.classList.add("js");try{{if(sessionStorage.getItem("auraSeen"))document.documentElement.classList.add("seen")}}catch(e){{}}</script><link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/dmsans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/cormorant-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css?v={ASSET_V}"><style>{CRIT_MENU}</style><script src="assets/site.js?v={ASSET_V}" defer></script>'
             f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script></head><body data-page="{slug}"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="lotA" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f3d3c8"/><stop offset="1" stop-color="#fdf1ec"/></linearGradient><linearGradient id="lotB" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#eba897"/><stop offset="1" stop-color="#f9d9cf"/></linearGradient><linearGradient id="lotC" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#df8f7c"/><stop offset=".55" stop-color="#eeb0a0"/><stop offset="1" stop-color="#f8d3c8"/></linearGradient><radialGradient id="lotPod" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f6e2a8"/><stop offset="1" stop-color="#b8934b"/></radialGradient><linearGradient id="leafG" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#14613a"/><stop offset=".6" stop-color="#2f9158"/><stop offset="1" stop-color="#63c78a"/></linearGradient><linearGradient id="igG" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FEDA77"/><stop offset=".25" stop-color="#F58529"/><stop offset=".5" stop-color="#DD2A7B"/><stop offset=".75" stop-color="#8134AF"/><stop offset="1" stop-color="#515BD4"/></linearGradient><linearGradient id="calG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f9158"/><stop offset="1" stop-color="#14613a"/></linearGradient></defs></svg><div id="loader" aria-hidden="true"><div class="ring"><img src="assets/img/logo.webp" alt="" width="96" height="96"></div><span>AURA</span></div>{header(slug)}<main id="contenido">{body}</main>{footer()}</body></html>')
     (OUT / f'{slug}.html').write_text(html, encoding='utf8')
 
