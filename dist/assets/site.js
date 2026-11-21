@@ -201,4 +201,10 @@
   new IntersectionObserver(es=>{active=es[0].isIntersecting;if(active)upd();},{rootMargin:'200px 0px'}).observe(v);
   upd();
  });
+
+ /* compartir por WhatsApp: mensaje + enlace de la página en la que estás */
+ $$('[data-share]').forEach(a=>{
+  const url=location.href.split('#')[0];
+  a.href='https://wa.me/?text='+encodeURIComponent((a.dataset.msg||'AURA Organic Salón')+' '+url);
+ });
 })();

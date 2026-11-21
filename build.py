@@ -2,12 +2,13 @@
 from pathlib import Path
 from html import escape as e
 import json
+from urllib.parse import quote as urlquote
 import re
 from content import SERVICES, PA, GOOGLE, INSTAGRAM, FACEBOOK
 
 ROOT = Path(__file__).parent
 OUT = ROOT / 'dist'
-ORIGIN = 'https://aura-organic-sauzal.sefiro888.chatgpt.site'
+ORIGIN = 'https://sefiro888.github.io/aura-organic-web'
 TEL = '+34642636970'
 
 
@@ -232,7 +233,7 @@ def footer():
             f'<footer><div class="wrap"><div class="footer-main"><div><p>Peluquería y estética unisex<br>con una mirada más natural.</p>{social()}</div>'
             f'<div><h3>Servicios</h3>{svc}</div>'
             f'<div><h3>Ven a conocernos</h3><span>Av. Inmaculada Concepción, 42<br>38360 El Sauzal · Tenerife</span><a href="{GOOGLE}" target="_blank" rel="noopener">Cómo llegar ↗</a><a href="tel:{TEL}">642 63 69 70</a><a href="mailto:auraesteticasauzal@gmail.com">Escríbenos</a></div>'
-            f'<div><h3>Sigue el día a día</h3><a href="{INSTAGRAM}" target="_blank" rel="noopener">Instagram ↗</a><a href="{FACEBOOK}" target="_blank" rel="noopener">Facebook ↗</a><a href="galeria.html">Galería</a><a href="cuidados.html">Cuidado en casa</a><a href="contacto.html">Organiza tu visita</a></div></div>'
+            f'<div><h3>Sigue el día a día</h3><a href="{INSTAGRAM}" target="_blank" rel="noopener">Instagram ↗</a><a href="{FACEBOOK}" target="_blank" rel="noopener">Facebook ↗</a><a href="galeria.html">Galería</a><a href="cuidados.html">Cuidado en casa</a><a href="contacto.html">Organiza tu visita</a>{share_link()}</div></div>'
             f'<div class="footer-mark" aria-hidden="true">AURA</div>'
             f'<div class="footer-bottom"><span>© 2026 AURA Organic Salón</span><span>BELLEZA CON RAÍCES · EL SAUZAL</span><a href="informacion.html">Información y privacidad</a></div></div></footer>'
             f'<script type="application/json" id="hours-data">{hours_json()}</script>'
@@ -249,13 +250,40 @@ def footer():
             f'<dialog id="lightbox" class="lightbox" aria-label="Fotografía ampliada"><button class="dialog-close" data-close aria-label="Cerrar fotografía">×</button><button class="lightbox-prev" aria-label="Foto anterior">‹</button><figure><img src="assets/img/equipo.webp" alt=""><figcaption><span id="lightbox-caption"></span><a id="lightbox-source" target="_blank" rel="noopener">Ver publicación original</a></figcaption></figure><button class="lightbox-next" aria-label="Foto siguiente">›</button></dialog>')
 
 
+SHARE_IMG = ORIGIN + '/assets/img/og-share.jpg'
+SHARE_ALT = 'Logotipo de AURA Organic Salón sobre madera de nogal y flores'
+SHARE_HOME = {'t': 'AURA Organic Salón · Peluquería y estética en El Sauzal',
+              'd': 'Peluquería y estética unisex en El Sauzal (Tenerife). Color sin amoniaco, rubios, keratina y novias. Más de 20 años de oficio y 4,8 ★ en Google. Pide tu cita.'}
+SHARE_MSG = 'Mira AURA Organic Salón: peluquería y estética en El Sauzal 💚'
+
+
+def share_meta(slug, title, desc):
+    url = ORIGIN + '/' + ('' if slug == 'index' else f'{slug}.html')
+    if slug == 'index':
+        t, d = SHARE_HOME['t'], SHARE_HOME['d']
+    else:
+        t, d = f'{title} · AURA Organic Salón', desc
+    t, d = e(t), e(d)
+    return (f'<link rel="canonical" href="{url}"><meta name="robots" content="noindex,follow">'
+            f'<meta property="og:type" content="website"><meta property="og:site_name" content="AURA Organic Salón"><meta property="og:title" content="{t}"><meta property="og:description" content="{d}">'
+            f'<meta property="og:url" content="{url}"><meta property="og:locale" content="es_ES">'
+            f'<meta property="og:image" content="{SHARE_IMG}"><meta property="og:image:secure_url" content="{SHARE_IMG}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="{SHARE_ALT}">'
+            f'<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{t}"><meta name="twitter:description" content="{d}"><meta name="twitter:image" content="{SHARE_IMG}">'
+            f'<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">')
+
+
+def share_link(label='Compartir por WhatsApp', cls='share'):
+    href = 'https://wa.me/?text=' + urlquote(SHARE_MSG + ' ' + ORIGIN + '/')
+    return f'<a class="{cls}" data-share data-msg="{e(SHARE_MSG)}" href="{href}" target="_blank" rel="noopener">{label}</a>'
+
+
 def page(slug, title, desc, body):
     schema = {'@context': 'https://schema.org', '@type': 'HairSalon', 'name': 'AURA Organic Salón', 'telephone': TEL,
               'address': {'@type': 'PostalAddress', 'streetAddress': 'Av. Inmaculada Concepción, 42', 'addressLocality': 'El Sauzal', 'postalCode': '38360', 'addressRegion': 'Santa Cruz de Tenerife', 'addressCountry': 'ES'},
-              'sameAs': [INSTAGRAM, FACEBOOK], 'image': ORIGIN + '/assets/img/equipo.webp'}
+              'sameAs': [INSTAGRAM, FACEBOOK], 'image': SHARE_IMG, 'url': ORIGIN + '/'}
     html = (f'<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#150b05">'
-            f'<title>{e(title)} · AURA Organic Salón · El Sauzal</title><meta name="description" content="{e(desc)}"><meta property="og:title" content="{e(title)} · AURA"><meta property="og:description" content="{e(desc)}"><meta property="og:type" content="website">'
-            f'<meta property="og:image" content="{ORIGIN}/assets/img/ambiente-logo.webp"><meta property="og:locale" content="es_ES"><link rel="icon" type="image/png" href="assets/img/favicon.png">'
+            f'<title>{e(title)} · AURA Organic Salón · El Sauzal</title><meta name="description" content="{e(desc)}">{share_meta(slug, title, desc)}'
+            f'<link rel="icon" type="image/png" href="assets/img/favicon.png">'
             f'<script>document.documentElement.classList.add("js");try{{if(sessionStorage.getItem("auraSeen"))document.documentElement.classList.add("seen")}}catch(e){{}}</script><link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/dmsans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="assets/fonts/cormorant-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>'
             f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script></head><body data-page="{slug}"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="lotA" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f3d3c8"/><stop offset="1" stop-color="#fdf1ec"/></linearGradient><linearGradient id="lotB" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#eba897"/><stop offset="1" stop-color="#f9d9cf"/></linearGradient><linearGradient id="lotC" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#df8f7c"/><stop offset=".55" stop-color="#eeb0a0"/><stop offset="1" stop-color="#f8d3c8"/></linearGradient><radialGradient id="lotPod" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f6e2a8"/><stop offset="1" stop-color="#b8934b"/></radialGradient><linearGradient id="leafG" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#14613a"/><stop offset=".6" stop-color="#2f9158"/><stop offset="1" stop-color="#63c78a"/></linearGradient><linearGradient id="igG" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FEDA77"/><stop offset=".25" stop-color="#F58529"/><stop offset=".5" stop-color="#DD2A7B"/><stop offset=".75" stop-color="#8134AF"/><stop offset="1" stop-color="#515BD4"/></linearGradient><linearGradient id="calG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f9158"/><stop offset="1" stop-color="#14613a"/></linearGradient></defs></svg><div id="loader" aria-hidden="true"><div class="ring"><img src="assets/img/logo.webp" alt="" width="96" height="96"></div><span>AURA</span></div>{header(slug)}<main id="contenido">{body}</main>{footer()}</body></html>')
     (OUT / f'{slug}.html').write_text(html, encoding='utf8')
@@ -730,7 +758,7 @@ page('cuidados', 'Cuidado en casa', 'Productos profesionales y una rutina capila
 # ───────────── contacto ─────────────
 page('contacto', 'Contacto y citas', 'Pide cita en AURA Organic Salón: 642 63 69 70. Av. Inmaculada Concepción 42, El Sauzal, Tenerife.',
      hero('contacto', 'El Sauzal, Tenerife', 'Hagamos\nun hueco.', 'Estamos al otro lado para escucharte, resolver tus dudas y encontrar un hueco para ti. Llámanos o prepara tu solicitud por WhatsApp.', crumb='Contacto')
-     + f'<section class="section" id="descubrir"><div class="wrap contact-grid"><div class="reveal">{kicker("Hablemos")}<h2>Una conversación<br><em>lo pone todo en marcha.</em></h2><a class="contact-phone" href="tel:{TEL}">642 63 69 70</a><p>Para pedir cita, consultar un servicio o preparar tu primera visita.</p><div class="actions">{book("Preparar mi solicitud")}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div><p style="margin-top:34px"><a class="link" href="mailto:auraesteticasauzal@gmail.com">auraesteticasauzal@gmail.com</a></p>{social(labels=True, cls="contact-social")}</div>'
+     + f'<section class="section" id="descubrir"><div class="wrap contact-grid"><div class="reveal">{kicker("Hablemos")}<h2>Una conversación<br><em>lo pone todo en marcha.</em></h2><a class="contact-phone" href="tel:{TEL}">642 63 69 70</a><p>Para pedir cita, consultar un servicio o preparar tu primera visita.</p><div class="actions">{book("Preparar mi solicitud")}<a class="link" href="tel:{TEL}">Prefiero llamar <span>→</span></a></div><p style="margin-top:34px"><a class="link" href="mailto:auraesteticasauzal@gmail.com">auraesteticasauzal@gmail.com</a></p>{social(labels=True, cls="contact-social")}<p style="margin-top:22px">{share_link("Compartir esta web por WhatsApp", "link")}</p></div>'
        f'<div class="visit-card reveal" style="--d:.15s"><h3>Ven a vernos</h3><address>Av. Inmaculada Concepción, 42<br>38360 El Sauzal<br>Santa Cruz de Tenerife</address>{open_badge()}<p style="margin-top:18px">Consulta más abajo el horario semanal. Se recomienda pedir cita; confirma la disponibilidad con el equipo.</p><div class="actions">{ext(GOOGLE, "Preparar mi ruta", "btn")}</div></div></div></section>'
      + f'<section class="section pearl"><div class="wrap"><div class="section-head reveal"><div>{kicker("Cuándo estamos")}<h2>Tu semana<br><em>en AURA.</em></h2></div><p>Mira de un vistazo si estamos abiertas ahora y cuándo abrimos.</p></div>{week_card()}</div></section>'
      + pillars_sec([
@@ -769,5 +797,5 @@ page('404', 'No encontramos esta página', 'Vuelve a explorar los cuidados de AU
           extra=f'<div class="actions">{link("index", "Volver al inicio", "btn")}{link("servicios", "Ver los servicios", "btn btn--ghost")}</div>')
      + '<div id="descubrir"></div>')
 
-(OUT / 'robots.txt').write_text('User-agent: *\nDisallow: /\n', encoding='utf8')
+(OUT / 'robots.txt').write_text('User-agent: WhatsApp\nAllow: /\n\nUser-agent: facebookexternalhit\nAllow: /\n\nUser-agent: Twitterbot\nAllow: /\n\nUser-agent: *\nDisallow: /\n', encoding='utf8')
 print(f'Generadas {len(list(OUT.glob("*.html")))} páginas HTML.')
