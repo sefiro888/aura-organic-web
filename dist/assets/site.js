@@ -207,4 +207,11 @@
   const url=location.href.split('#')[0];
   a.href='https://wa.me/?text='+encodeURIComponent((a.dataset.msg||'AURA Organic Salón')+' '+url);
  });
+
+ /* menú móvil: «Servicios» desplegable */
+ $$('.m-acc-btn').forEach(btn=>{
+  const box=btn.closest('.m-acc');
+  btn.addEventListener('click',()=>{const open=!box.classList.contains('open');box.classList.toggle('open',open);btn.setAttribute('aria-expanded',String(open));
+   if(open)setTimeout(()=>box.scrollIntoView({block:'nearest',behavior:reduced?'auto':'smooth'}),120);});
+ });
 })();

@@ -194,13 +194,19 @@ def header(active):
     nav = [('index', 'Inicio'), ('servicios', 'Servicios'), ('novias', 'Novias'), ('salon', 'El salón'), ('galeria', 'Galería'), ('contacto', 'Contacto')]
     items = ''.join(f'<a href="{s}.html"' + (' aria-current="page"' if active == s else '') + f'>{t}</a>' for s, t in nav)
     mega = ''.join(f'<a href="{s}.html">{img(CARD[s], v["title"])}<span>{v["short"]}</span></a>' for s, v in SERVICES.items())
-    msub = ''.join('<a href="' + k + '.html">' + v['short'] + '</a>' for k, v in SERVICES.items())
+    chev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
+    in_services = active in SERVICES or active in ('servicios', 'cuidados')
+    sub = ''.join(f'<a href="{k}.html"' + (' aria-current="page"' if active == k else '') + f'><span class="n">0{i + 1}</span><span class="t">{v["title"]}</span><small>{v["short"]}</small></a>' for i, (k, v) in enumerate(SERVICES.items()))
+    macc = (f'<div class="m-acc{" open" if in_services else ""}"><button type="button" class="m-acc-btn" aria-expanded="{"true" if in_services else "false"}" aria-controls="m-services"><span>Servicios</span>{chev}</button>'
+            f'<div class="m-sub" id="m-services"><div class="m-sub-in"><a class="all" href="servicios.html"' + (' aria-current="page"' if active == 'servicios' else '') + f'>Toda la carta de cuidados <span aria-hidden="true">→</span></a>{sub}'
+            f'<a class="more" href="cuidados.html"' + (' aria-current="page"' if active == 'cuidados' else '') + '>Cuidado en casa <span aria-hidden="true">→</span></a></div></div></div>')
+    mitems = ''.join(macc if s == 'servicios' else f'<a href="{s}.html"' + (' aria-current="page"' if active == s else '') + f'>{t}</a>' for s, t in nav)
     phone = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>'
     return (f'<a class="skip" href="#contenido">Saltar al contenido</a>'
             f'<header class="header"><div class="header-in"><a href="index.html" class="brand" aria-label="AURA Organic Salón, inicio"><img src="assets/img/logo.webp" alt="" width="56" height="56"><span>AURA<small>ORGANIC SALÓN</small></span></a>'
             f'<nav class="desktop-nav" aria-label="Navegación principal">{items}</nav>'
             f'<div class="header-actions"><a class="header-phone" href="tel:{TEL}">{phone}642 63 69 70</a>{book("Tu momento AURA")}<button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span></button></div></div></header>'
-            f'<div class="mobile-menu" id="mobile-menu" hidden><nav aria-label="Navegación móvil">{items}</nav><div class="mobile-sub">{msub}<a href="cuidados.html">Cuidado en casa</a></div>{social(labels=True)}<a class="btn" href="tel:{TEL}">Llamar · 642 63 69 70</a></div>'
+            f'<div class="mobile-menu" id="mobile-menu" hidden><nav aria-label="Navegación móvil">{mitems}</nav>{social(labels=True)}<a class="btn" href="tel:{TEL}">Llamar · 642 63 69 70</a></div>'
             f'<div class="service-menu" id="service-menu"><div class="wrap"><div>{kicker("Elige cómo cuidarte")}<h2>Un cuidado<br><em>muy tuyo.</em></h2>{link("servicios", "Todos los servicios")}</div><div class="mega-grid">{mega}</div></div></div><div class="reading-progress" aria-hidden="true"></div>')
 
 
