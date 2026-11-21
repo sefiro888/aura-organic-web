@@ -1035,3 +1035,6 @@ html:not(.js) .petal{transform:rotate(var(--a)) scale(var(--s))}
  .mobile-dock .dock-fab:active{transform:scale(.96)}
 }
 @media (max-width:760px){.hero,.hero--home,.hero--sub{padding-bottom:128px}}
+
+footer a.share{display:inline-flex;align-items:center;gap:8px;margin-top:6px;color:#25D366}
+footer a.share::before{content:"";width:16px;height:16px;background:#25D366;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z'/%3E%3C/svg%3E") center/contain no-repeat}
