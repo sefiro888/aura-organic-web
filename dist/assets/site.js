@@ -62,6 +62,15 @@
  /* pestañas de servicio con avance automático */
  $$('.xp').forEach(xp=>{
   const tabs=$$('.xp-tab',xp),panels=$$('.xp-panel',xp),dur=8000;let cur=0,timer,visible=false;
+  if(matchMedia('(max-width: 1100px)').matches){
+   const box=$('.xp-panels',xp);let raf=0,idx=0;
+   const left=k=>panels[k].offsetLeft-panels[0].offsetLeft;
+   const mark=i=>{tabs.forEach((t,k)=>{t.setAttribute('aria-selected',String(k===i));t.tabIndex=k===i?0:-1;});panels.forEach((p,k)=>p.classList.toggle('is-active',k===i));};
+   tabs.forEach((t,k)=>t.addEventListener('click',()=>{box.scrollTo({left:left(k),behavior:reduced?'auto':'smooth'});mark(k);idx=k;}));
+   box.addEventListener('scroll',()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{let best=0,d=1e9;panels.forEach((p,k)=>{const x=Math.abs(left(k)-box.scrollLeft);if(x<d){d=x;best=k;}});if(best!==idx){idx=best;mark(idx);}});},{passive:true});
+   mark(0);
+   return;
+  }
   xp.style.setProperty('--dur',dur+'ms');
   const show=i=>{cur=(i+tabs.length)%tabs.length;tabs.forEach((t,k)=>{t.setAttribute('aria-selected',String(k===cur));t.tabIndex=k===cur?0:-1;});panels.forEach((pn,k)=>pn.classList.toggle('is-active',k===cur));const bar=$('.bar',tabs[cur]);if(bar){const c=bar.cloneNode(true);bar.replaceWith(c);}};
   const loop=()=>{clearTimeout(timer);if(reduced||!visible||xp.classList.contains('paused'))return;timer=setTimeout(()=>{show(cur+1);loop();},dur);};
