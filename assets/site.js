@@ -63,19 +63,14 @@
  $$('.xp').forEach(xp=>{
   const tabs=$$('.xp-tab',xp),panels=$$('.xp-panel',xp),dur=8000;let cur=0,timer,visible=false;
   if(matchMedia('(max-width: 1100px)').matches){
-   const box=$('.xp-panels',xp),bar=$('.xp-tabs',xp);let raf=0,idx=0,lock=0,lockT;
-   const mk=(label,txt)=>{const x=document.createElement('button');x.type='button';x.className='xp-arrow';x.setAttribute('aria-label',label);x.textContent=txt;return x;};
-   const prev=mk('Apartado anterior','‹'),next=mk('Apartado siguiente','›');
-   bar.prepend(prev);bar.append(next);
-   const off=k=>panels[k].offsetLeft-18;
-   const pad=()=>{box.style.paddingRight=Math.max(18,box.clientWidth-panels[0].offsetWidth-18)+'px';};
-   const mark=i=>{tabs.forEach((t,k)=>{t.setAttribute('aria-selected',String(k===i));t.tabIndex=k===i?0:-1;});panels.forEach((p,k)=>p.classList.toggle('is-active',k===i));prev.disabled=i===0;next.disabled=i===panels.length-1;};
-   const go=k=>{k=Math.max(0,Math.min(panels.length-1,k));idx=k;mark(k);lock=1;clearTimeout(lockT);lockT=setTimeout(()=>{lock=0;},reduced?60:750);box.scrollTo({left:off(k),behavior:reduced?'auto':'smooth'});};
-   tabs.forEach((t,k)=>t.addEventListener('click',()=>go(k)));
-   prev.addEventListener('click',()=>go(idx-1));next.addEventListener('click',()=>go(idx+1));
-   box.addEventListener('scroll',()=>{if(lock)return;cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{let best=0,d=1e9;panels.forEach((p,k)=>{const x=Math.abs(off(k)-box.scrollLeft);if(x<d){d=x;best=k;}});if(best!==idx){idx=best;mark(idx);}});},{passive:true});
-   $$('.xp-more',xp).forEach(btn=>btn.addEventListener('click',()=>{const p=btn.closest('.xp-panel'),o=p.classList.toggle('open');btn.setAttribute('aria-expanded',String(o));$('span',btn).textContent=o?'Leer menos':'Leer más';}));
-   pad();addEventListener('resize',pad);mark(0);
+   panels.forEach((p,k)=>{
+    const h=$('h3',p),fg=$('.arch',p);
+    h.tabIndex=0;h.setAttribute('role','button');h.setAttribute('aria-expanded',String(k===0));
+    const t=()=>{const o=p.classList.toggle('open');h.setAttribute('aria-expanded',String(o));};
+    h.addEventListener('click',t);fg.addEventListener('click',t);
+    h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});
+    if(k===0)p.classList.add('open');
+   });
    return;
   }
   xp.style.setProperty('--dur',dur+'ms');

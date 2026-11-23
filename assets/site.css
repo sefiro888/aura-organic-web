@@ -1137,3 +1137,24 @@ footer a.share::before{content:"";width:16px;height:16px;background:#25D366;-web
  .xp .xp-panels{align-items:stretch;scroll-snap-type:x mandatory}
  .xp .xp-panel{scroll-snap-align:start;scroll-snap-stop:always;align-content:start;touch-action:pan-x pan-y}
 }
+
+/* ───── v3.15 · «Qué incluye» móvil: lista vertical de tarjetas desplegables ───── */
+@media (max-width:1100px){
+ .xp .xp-tabs{display:none!important}
+ .xp .xp-panels{display:flex;flex-direction:column;gap:14px;overflow:visible;margin:0;padding:0;scroll-snap-type:none}
+ .xp .xp-panels .xp-panel{flex:none;width:100%;min-width:0;opacity:1;border-radius:26px;display:grid;grid-template-columns:minmax(0,1fr);scroll-snap-align:none;align-content:start}
+ .xp .xp-panel::before{top:16px;left:20px;translate:none;font-size:1.15rem}
+ .xp .xp-panel .arch{aspect-ratio:16/10;height:auto;cursor:pointer}
+ .xp .xp-panel .arch img{width:100%;height:100%;object-fit:cover}
+ .xp .xp-panel h3{cursor:pointer;text-align:left;padding:0 64px 18px 22px;font-size:clamp(1.5rem,6.2vw,1.9rem)}
+ .xp .xp-panel h3::after{content:"+";position:absolute;right:18px;bottom:16px;margin:0;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(230,205,143,.7);font:300 1.4rem/1 var(--serif);color:var(--brassl);transition:transform .4s var(--ease),background .3s}
+ .xp .xp-panel.open h3::after{transform:rotate(45deg);background:rgba(230,205,143,.18)}
+ .xp .xp-panel>div>p,.xp .xp-panel .more,.xp .xp-panel .actions,.xp .xp-more{display:none}
+ .xp .xp-panel.open>div>p{display:block;padding:20px 22px 0}
+ .xp .xp-panel.open .more{display:block;padding:0 22px}
+ .xp .xp-panel.open .more .more-in{overflow:visible}
+ .xp .xp-panel.open .actions{display:flex;padding:18px 22px 4px}
+ .xp .xp-panel.open>div{padding-bottom:24px}
+ .xp .xp-panel.open>div>p:last-child{padding-bottom:0}
+}
+@media (max-width:1100px){.xp .xp-panels .xp-panel.open{padding-bottom:26px}}
