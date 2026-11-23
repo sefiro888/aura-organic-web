@@ -524,9 +524,14 @@ def steps_sec(items, kick, h2, intro='', cta=None, cls='', sid='', icons=None, p
     return (f'<section class="section{c}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div><div class="vine" data-vine>{st}</div>{act}</div></section>')
 
 
+def more_html(p2):
+    return (f'<div class="more"><div class="more-in"><p>{p2}</p></div></div>'
+            '<button class="xp-more" type="button" aria-expanded="false"><span>Leer más</span><i aria-hidden="true">+</i></button>')
+
+
 def xp_sec(key, tabs, kick, h2, intro='', cls='dark grain', sid=''):
     tb = ''.join(f'<button class="xp-tab" role="tab" id="tab-{key}-{i}" aria-controls="pn-{key}-{i}" aria-selected="{"true" if i == 0 else "false"}"><span class="nr">0{i + 1}</span><span class="t">{t["title"]}</span><span class="bar"></span></button>' for i, t in enumerate(tabs))
-    pn = ''.join(f'<article class="xp-panel{" is-active" if i == 0 else ""}" role="tabpanel" id="pn-{key}-{i}" aria-labelledby="tab-{key}-{i}"><figure class="arch">{img(t["img"], t["alt"])}</figure><div><h3>{t["title"]}</h3><p>{t["p1"]}</p>' + (f'<p>{t["p2"]}</p>' if t.get('p2') else '') + (f'<div class="actions" style="margin-top:26px">{t["cta"]}</div>' if t.get('cta') else '') + '</div></article>' for i, t in enumerate(tabs))
+    pn = ''.join(f'<article class="xp-panel{" is-active" if i == 0 else ""}" data-n="0{i + 1}" role="tabpanel" id="pn-{key}-{i}" aria-labelledby="tab-{key}-{i}"><figure class="arch">{img(t["img"], t["alt"])}</figure><div><h3>{t["title"]}</h3><p>{t["p1"]}</p>' + (more_html(t["p2"]) if t.get('p2') else '') + (f'<div class="actions" style="margin-top:26px">{t["cta"]}</div>' if t.get('cta') else '') + '</div></article>' for i, t in enumerate(tabs))
     return (f'<section class="section {cls}"{_sid(sid)}><div class="wrap"><div class="section-head reveal"><div>{kicker(kick)}<h2>{h2}</h2></div><p>{intro}</p></div>'
             f'<div class="xp reveal"><div class="xp-tabs" role="tablist" aria-label="{kick}">{tb}</div><div class="xp-panels">{pn}</div></div></div></section>')
 
@@ -701,7 +706,7 @@ for slug, d in SERVICES.items():
     pillars = ('<section class="section pearl"><div class="wrap"><div class="section-head reveal"><div>' + kicker('Lo esencial') + '<h2>Lo que<br><em>encontrarás.</em></h2></div><p>Cuatro ideas que guían este cuidado en AURA.</p></div><div class="pillars">'
                + ''.join(f'<article class="pillar reveal" style="--d:{i * .1}s"><span class="ico" aria-hidden="true">{ico(t)}</span><h3>{t}</h3><p>{p}</p></article>' for i, (t, p) in enumerate(x['pillars'])) + '</div></div></section>')
     tabs = ''.join(f'<button class="xp-tab" role="tab" id="tab-{slug}-{i}" aria-controls="pn-{slug}-{i}" aria-selected="{"true" if i == 0 else "false"}"><span class="nr">0{i + 1}</span><span class="t">{t}</span><span class="bar"></span></button>' for i, (t, _, _) in enumerate(d['sections']))
-    panels = ''.join(f'<article class="xp-panel{" is-active" if i == 0 else ""}" role="tabpanel" id="pn-{slug}-{i}" aria-labelledby="tab-{slug}-{i}"><figure class="arch">{img(x["tabs"][i], d["title"] + ": fotografía real de AURA")}</figure><div><h3>{t}</h3><p>{p1}</p><p>{p2}</p></div></article>' for i, (t, p1, p2) in enumerate(d['sections']))
+    panels = ''.join(f'<article class="xp-panel{" is-active" if i == 0 else ""}" data-n="0{i + 1}" role="tabpanel" id="pn-{slug}-{i}" aria-labelledby="tab-{slug}-{i}"><figure class="arch">{img(x["tabs"][i], d["title"] + ": fotografía real de AURA")}</figure><div><h3>{t}</h3><p>{p1}</p>{more_html(p2)}</div></article>' for i, (t, p1, p2) in enumerate(d['sections']))
     explorer = (f'<section class="section dark grain" id="descubrir"><div class="wrap"><div class="section-head reveal"><div>{kicker("Qué incluye")}<h2>El cuidado,<br><em>paso a paso.</em></h2></div><p><span class="only-d">Elige un apartado o déjate llevar: cambia solo.</span><span class="only-m">Desliza o toca un número para ver cada apartado.</span></p></div>'
                 f'<div class="xp reveal"><div class="xp-tabs" role="tablist" aria-label="Apartados de {d["short"]}">{tabs}</div><div class="xp-panels">{panels}</div></div></div></section>')
     steps = (f'<section class="section" id="cita"><div class="wrap"><div class="section-head reveal"><div>{kicker("Tu cita")}<h2>Así será<br><em>tu visita.</em></h2></div><p>Sin sorpresas: sabrás qué ocurre en cada momento.</p></div><div class="vine" data-vine>'
