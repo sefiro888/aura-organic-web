@@ -1063,3 +1063,8 @@ footer a.share::before{content:"";width:16px;height:16px;background:#25D366;-web
 .m-sub-in a.all{padding-top:8px}
 .m-sub-in a.more{border-top:1px solid rgba(230,205,143,.16);margin-top:6px;padding-top:16px}
 @media (prefers-reduced-motion:reduce){.m-sub,.m-sub-in a,.m-acc-btn svg{transition-duration:.01ms!important}}
+
+/* v3.11 · cinco tarjetas en «El detalle lo cambia todo» */
+.options.five{grid-template-columns:repeat(5,1fr)}
+@media (max-width:1100px){.options.five{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:700px){.options.five{grid-template-columns:1fr}}
